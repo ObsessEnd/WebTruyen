@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Thiên Đạo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <script>
+        if (localStorage.getItem('IS_LOGGED_IN') !== 'true') window.location.href = 'login.html';
+    </script>
+    <style>
+        .chapter-list-scroll { max-height: 500px; overflow-y: auto; }
+        .chap-item.active { background-color: #0d6efd; color: white; }
+        .chap-item { cursor: pointer; transition: 0.2s; }
+        .chap-item:hover:not(.active) { background-color: #e9ecef; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold text-warning" href="index.html">
+                <img src="images/favicon-32x32.png" width="30" class="me-2 rounded-circle bg-white">
+                Hệ Thống Admin
+            </a>
+            <div class="d-flex gap-2">
+                <a href="index.html" class="btn btn-outline-light btn-sm"><i class="fas fa-eye me-1"></i>Xem Web</a>
+                <button id="btn-logout" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt me-1"></i>Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-primary"><i class="fas fa-tasks me-2"></i>Quản Lý Truyện</h3>
+            <button class="btn btn-success fw-bold shadow-sm" onclick="openAddModal()">
+                <i class="fas fa-plus me-1"></i> Thêm Truyện Mới
+            </button>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" width="60">ID</th>
+                            <th width="70">Ảnh</th>
+                            <th>Tên Truyện</th>
+                            <th>Tác giả</th>
+                            <th>Số Chương</th>
+                            <th>Tình trạng</th>
+                            <th class="text-center" width="250">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="storyModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white" id="storyModalHeader">
+                    <h5 class="modal-title fw-bold" id="storyModalTitle">Thêm Truyện Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <form id="story-form">
+                        <input type="hidden" id="form-action">
+                        <input type="hidden" id="form-story-id">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-1">Tên truyện <span class="text-danger">*</span></label>
+                                <input type="text" id="m-title" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-1">Tác giả</label>
+                                <input type="text" id="m-author" class="form-control" placeholder="Để trống mặc định là 'Không rõ'">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="fw-bold mb-1">Link Ảnh bìa (URL)</label>
+                                <input type="url" id="m-cover" class="form-control" placeholder="Để trống sẽ dùng ảnh bìa màu đen mặc định">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="fw-bold mb-2">Thể loại</label>
+                                <div class="border bg-white p-3 rounded shadow-sm">
+                                    <div class="row g-2" id="m-categories-container"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-1">Tình trạng</label>
+                                <select id="m-status" class="form-select">
+                                    <option value="Đang ra">Đang ra</option>
+                                    <option value="Hoàn thành">Hoàn thành</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-1">Số chương (Chỉ nhập khi thêm mới)</label>
+                                <input type="number" id="m-chapter" class="form-control" min="0">
+                                <small class="text-muted d-none" id="m-chapter-help">Để thêm chương, vui lòng dùng nút "Quản lý chương".</small>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="m-hot">
+                                    <label class="form-check-label fw-bold text-danger">Đánh dấu là Truyện HOT</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="fw-bold mb-1">Tóm tắt nội dung</label>
+                                <textarea id="m-desc" class="form-control" rows="4" required></textarea>
+                            </div>
+                        </div>
+                        <div class="text-end mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-secondary px-4 me-2" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold"><i class="fas fa-save me-2"></i>Lưu Lại</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="chapterModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-list-ol me-2"></i>Quản Lý Chương: <span id="chap-modal-story-title" class="text-warning"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-4 border-end bg-light p-3 chapter-list-scroll">
+                            <button class="btn btn-primary w-100 fw-bold mb-3 shadow-sm" onclick="prepareAddChapter()">
+                                <i class="fas fa-plus me-1"></i> Thêm Chương Mới
+                            </button>
+                            
+                            <div class="input-group mb-3 shadow-sm">
+                                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" id="search-chapter-input" class="form-control border-start-0" placeholder="Tìm số hoặc tên chương...">
+                            </div>
+
+                            <div class="list-group list-group-flush border rounded bg-white" id="chapter-list-container">
+                                </div>
+                        </div>
+                        
+                        <div class="col-md-8 p-4 bg-white" id="chapter-editor-area" style="display: none;">
+                            <h5 class="fw-bold text-primary mb-3 border-bottom pb-2" id="editor-title">Đang thêm/sửa chương...</h5>
+                            <form id="chapter-form">
+                                <input type="hidden" id="c-story-id">
+                                <input type="hidden" id="c-action"> 
+                                <input type="hidden" id="c-number"> 
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="fw-bold mb-1">Số hiệu</label>
+                                        <input type="text" id="c-display-num" class="form-control bg-light fw-bold text-danger" readonly>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="fw-bold mb-1">Tên phụ (VD: Khởi đầu 2)</label>
+                                        <input type="text" id="c-subtitle" class="form-control" placeholder="Để trống nếu chỉ hiển thị 'Chương X'">
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex gap-4 mb-3 border p-2 bg-light rounded">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="c-vip">
+                                        <label class="form-check-label fw-bold text-warning"><i class="fas fa-crown"></i> Khóa VIP</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="c-hidden">
+                                        <label class="form-check-label fw-bold text-secondary"><i class="fas fa-eye-slash"></i> Ẩn chương này</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="fw-bold mb-1">Nội dung chương</label>
+                                    <textarea id="c-content" class="form-control" rows="12" placeholder="Nhập nội dung truyện vào đây..."></textarea>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success px-5 fw-bold"><i class="fas fa-save me-2"></i>Lưu Chương</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-8 p-5 text-center text-muted" id="chapter-welcome-area">
+                            <i class="fas fa-keyboard fa-5x mb-3 opacity-25"></i>
+                            <h4>Chọn một chương bên trái để chỉnh sửa</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

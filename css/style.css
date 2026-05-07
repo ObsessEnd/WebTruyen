@@ -1,0 +1,99 @@
+/* Khai báo biến CSS để dễ dàng thay đổi màu sắc sau này */
+:root {
+    --primary-color: #667eea;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --text-dark: #2c3e50;
+    --bg-light: #f8f9fa;
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --hover-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+}
+
+/* -- UI COMPONENTS -- */
+
+/* Banner Swiper */
+.bannerSwiper {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+.banner-slide-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+}
+.banner-img {
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
+
+/* Card Truyện (Tối ưu hover) */
+.story-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.story-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+.story-img-wrapper {
+    height: 250px;
+    overflow: hidden;
+}
+.story-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.story-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Item List Cập nhật / Ranking */
+.list-item-hover:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+}
+/* --- HIỆU ỨNG TỐI ƯU UX KHI CLICK TÊN/ẢNH TRUYỆN --- */
+
+/* Đổi màu tên truyện ở Truyện Đề Cử / Xếp Hạng khi đưa chuột vào */
+.hover-title {
+    color: var(--text-dark);
+    transition: color 0.2s ease-in-out;
+}
+.hover-title:hover {
+    color: var(--primary-color);
+}
+
+/* Hiệu ứng sáng chữ ở Banner */
+.hover-title-banner {
+    transition: text-shadow 0.3s ease;
+}
+.hover-title-banner:hover {
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
+}
+
+/* Ảnh bìa hơi mờ đi một chút khi đưa chuột vào để báo hiệu có thể click */
+.hover-img {
+    transition: opacity 0.3s ease;
+}
+.hover-img:hover {
+    opacity: 0.85;
+}
+.transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }

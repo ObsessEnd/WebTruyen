@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đọc Truyện - Thiên Đạo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* CHUYỂN ĐỔI MƯỢT MÀ VÀ MÀU SẮC TƯƠNG PHẢN */
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        .reading-box { transition: background-color 0.3s ease, border-color 0.3s ease; border-radius: 8px; }
+        
+        /* 1. GIAO DIỆN SÁNG */
+        .theme-light { background-color: #e9ecef; color: #212529; }
+        .theme-light .reading-box { background-color: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .theme-light .text-muted { color: #6c757d !important; }
+        
+        /* 2. GIAO DIỆN TỐI */
+        .theme-dark { background-color: #121212; color: #ced4da; }
+        .theme-dark .reading-box { background-color: #1e1e1e; border: 1px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+        .theme-dark .text-primary { color: #5c9ce6 !important; }
+        .theme-dark .text-muted { color: #8e959b !important; }
+        .theme-dark .border-bottom, .theme-dark .border-top { border-color: #333 !important; }
+        .theme-dark .breadcrumb-item a { color: #5c9ce6 !important; }
+        .theme-dark .btn-outline-secondary { color: #ced4da; border-color: #555; }
+        .theme-dark .btn-outline-secondary:hover { background-color: #333; color: #fff; }
+
+        /* 3. GIAO DIỆN GIẤY CŨ */
+        .theme-sepia { background-color: #e2d5b6; color: #5b4636; }
+        .theme-sepia .reading-box { background-color: #f4ecd8; border: 1px solid #dccbaf; box-shadow: 0 4px 6px rgba(91,70,54,0.1); }
+        .theme-sepia .text-primary { color: #8b5a2b !important; }
+        .theme-sepia .text-muted { color: #9c7f65 !important; }
+        .theme-sepia .border-bottom, .theme-sepia .border-top { border-color: #dccbaf !important; }
+        .theme-sepia .breadcrumb-item a { color: #8b5a2b !important; }
+        .theme-sepia .btn-outline-secondary { color: #5b4636; border-color: #c4b397; }
+        .theme-sepia .btn-outline-secondary:hover { background-color: #dccbaf; color: #3a2d22; }
+
+        /* Font chữ đọc truyện */
+        #chapter-content { font-family: 'Palatino Linotype', 'Times New Roman', serif; }
+        
+        /* Ẩn mũi tên lên xuống của thẻ input type=number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="theme-light transition-hover" id="read-body">
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+            <div class="container">
+                <a class="navbar-brand text-warning fw-bold d-flex align-items-center" href="index.html">
+                    <img src="images/favicon-32x32.png" alt="Logo" width="32" height="32" class="me-2 rounded-circle bg-white shadow-sm">
+                    Thiên Đạo
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Thể loại</a>
+                            <ul class="dropdown-menu border-0 shadow-lg p-2" style="min-width: 520px;">
+                                <li>
+                                    <div class="row g-2 px-2">
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Tiên+Hiệp">Tiên Hiệp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Kiếm+Hiệp">Kiếm Hiệp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Ngôn+Tình">Ngôn Tình</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đam+Mỹ">Đam Mỹ</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Bách+Hợp">Bách Hợp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Quan+Trường">Quan Trường</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Võng+Du">Võng Du</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Khoa+Huyễn">Khoa Huyễn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Hệ+Thống">Hệ Thống</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Huyền+Huyễn">Huyền Huyễn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Dị+Giới">Dị Giới</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Dị+Năng">Dị Năng</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Quân+Sự">Quân Sự</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Lịch+Sử">Lịch Sử</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Xuyên+Không">Xuyên Không</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Mạt+Thế">Mạt Thế</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đô+Thị">Đô Thị</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Trọng+Sinh">Trọng Sinh</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Cung+Đấu">Cung Đấu</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Nữ+Cường">Nữ Cường</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Hiện+Đại">Hiện Đại</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Nữ+Phụ">Nữ Phụ</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Gia+Đấu">Gia Đấu</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Điền+Văn">Điền Văn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Truyện+Teen">Truyện Teen</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Light+Novel">Light Novel</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đoản+Văn">Đoản Văn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Khác">Khác</a></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="index.html#ranking">Xếp hạng</a></li>
+                    </ul>
+                    
+                    <button class="btn btn-outline-warning btn-sm ms-lg-3 fw-bold" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="fas fa-search me-1"></i> Tìm truyện
+                    </button>
+                    <div class="ms-lg-3 d-flex gap-2" id="nav-auth-section"></div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div style="height: 70px;"></div>
+
+    <div class="container mt-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 mb-4 reading-box">
+            <nav aria-label="breadcrumb" class="mb-2 mb-md-0">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-primary"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="#" id="read-story-link" class="text-decoration-none text-primary">Tên Truyện</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" id="read-chap-bc">Chương ?</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-light border fw-bold" style="color: #212529;" onclick="changeTheme('theme-light')" title="Nền Sáng"><i class="fas fa-sun text-warning me-1"></i> Sáng</button>
+                    <button class="btn btn-sm btn-dark fw-bold" onclick="changeTheme('theme-dark')" title="Nền Tối"><i class="fas fa-moon me-1"></i> Tối</button>
+                    <button class="btn btn-sm border fw-bold" style="background-color: #f4ecd8; color: #5b4636; border-color: #dccbaf;" onclick="changeTheme('theme-sepia')" title="Nền Giấy Cổ"><i class="fas fa-book-open me-1"></i> Giấy</button>
+                </div>
+                <div class="d-flex gap-1 align-items-center border-start ps-3">
+                    <button class="btn btn-sm btn-outline-secondary fw-bold px-2" onclick="changeFontSize(-2)">A-</button>
+                    <input type="number" id="font-size-input" class="form-control form-control-sm text-center text-primary fw-bold px-1 mx-1 shadow-none border-secondary bg-transparent" style="width: 55px; height: 31px;" min="14" max="40" onchange="manualChangeFontSize(this.value)">
+                    <button class="btn btn-sm btn-outline-secondary fw-bold px-2" onclick="changeFontSize(2)">A+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mb-5">
+        <div id="read-container" class="p-4 p-md-5 reading-box">
+            
+            <h3 class="text-center text-primary fw-bold mb-2" id="read-title">Tên Truyện</h3>
+            <h5 class="text-center text-muted mb-4 pb-3 border-bottom" id="read-chap-title">Chương ?</h5>
+
+            <div class="d-flex justify-content-center gap-2 mb-5">
+                <button id="btn-prev-top" class="btn btn-primary"><i class="fas fa-arrow-left"></i></button>
+                <a href="#" id="btn-list-top" class="btn btn-outline-primary"><i class="fas fa-list"></i> Mục lục</a>
+                <button id="btn-next-top" class="btn btn-primary"><i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div id="chapter-content" style="line-height: 2;">
+                <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2 mt-5 pt-4 border-top">
+                <button id="btn-prev-bot" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Chương trước</button>
+                <a href="#" id="btn-list-bot" class="btn btn-outline-primary"><i class="fas fa-list"></i> Mục lục</a>
+                <button id="btn-next-bot" class="btn btn-primary">Chương sau <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-dark py-4 text-center text-white mt-auto">
+        <p class="mb-0 small">&copy; 2026 Thiên Đạo Đọc Truyện - Đồ án lập trình</p>
+    </footer>
+
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-white border-bottom">
+                    <h5 class="modal-title fw-bold text-primary"><i class="fas fa-filter me-2"></i>Lọc Truyện Nâng Cao</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light p-4">
+                    <form id="advanced-search-form">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <h6 class="fw-bold text-info mb-3">Sắp xếp theo</h6>
+                                <div class="list-group shadow-sm rounded border-0">
+                                    <label class="list-group-item list-group-item-action cursor-pointer">
+                                        <input class="form-check-input me-2" type="radio" name="sort" value="new" checked> Mới nhất
+                                    </label>
+                                    <label class="list-group-item list-group-item-action cursor-pointer">
+                                        <input class="form-check-input me-2" type="radio" name="sort" value="views"> Xem nhiều nhất
+                                    </label>
+                                    <label class="list-group-item list-group-item-action cursor-pointer">
+                                        <input class="form-check-input me-2" type="radio" name="sort" value="az"> Tên: A - Z
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold text-info mb-2">Tình trạng</h6>
+                                        <div class="d-flex gap-3 border p-3 bg-white rounded shadow-sm">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="status" value="" checked><label class="form-check-label">Tất cả</label></div>
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="status" value="Đang ra"><label class="form-check-label">Đang ra</label></div>
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="status" value="Hoàn thành"><label class="form-check-label">Hoàn thành</label></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold text-info mb-2">Số chương</h6>
+                                        <div class="d-flex gap-3 border p-3 bg-white rounded shadow-sm">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="all" checked><label class="form-check-label">Tất cả</label></div>
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="0-100"><label class="form-check-label">< 100</label></div>
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="100-500"><label class="form-check-label">100-500</label></div>
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="500-999999"><label class="form-check-label">> 500</label></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="fw-bold text-info mb-2">Thể loại</h6>
+                                <div class="border p-3 bg-white rounded shadow-sm mb-4">
+                                    <div class="row g-2">
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Tiên Hiệp"><label class="form-check-label small">Tiên Hiệp</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Kiếm Hiệp"><label class="form-check-label small">Kiếm Hiệp</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Ngôn Tình"><label class="form-check-label small">Ngôn Tình</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Đam Mỹ"><label class="form-check-label small">Đam Mỹ</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Bách Hợp"><label class="form-check-label small">Bách Hợp</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Quan Trường"><label class="form-check-label small">Quan Trường</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Võng Du"><label class="form-check-label small">Võng Du</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Khoa Huyễn"><label class="form-check-label small">Khoa Huyễn</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Hệ Thống"><label class="form-check-label small">Hệ Thống</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Huyền Huyễn"><label class="form-check-label small">Huyền Huyễn</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Dị Giới"><label class="form-check-label small">Dị Giới</label></div></div>
+                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Dị Năng"><label class="form-check-label small">Dị Năng</label></div></div>
+                                    </div>
+                                </div>
+                                <div class="input-group shadow-sm">
+                                    <input type="text" id="search-keyword" class="form-control" placeholder="Tên truyện hoặc tác giả...">
+                                    <button type="submit" class="btn btn-primary px-5 fw-bold">Tìm Kiếm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/read.js"></script>
+</body>
+</html>
