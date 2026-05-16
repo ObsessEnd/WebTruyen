@@ -1,6 +1,9 @@
+// Danh sách 35 thể loại chuẩn
 const ALL_CATEGORIES = ["Tiên Hiệp", "Kiếm Hiệp", "Ngôn Tình", "Đam Mỹ", "Bách Hợp", "Quan Trường", "Võng Du", "Khoa Huyễn", "Hệ Thống", "Huyền Huyễn", "Dị Giới", "Dị Năng", "Quân Sự", "Lịch Sử", "Xuyên Không", "Xuyên Nhanh", "Trọng Sinh", "Trinh Thám", "Linh Dị", "Ngược", "Sắc", "Sủng", "Cung Đấu", "Nữ Cường", "Gia Đấu", "Đông Phương", "Đô Thị", "Điền Văn", "Mạt Thế", "Truyện Teen", "Nữ Phụ", "Light Novel", "Đoản Văn", "Hiện Đại", "Khác"];
 
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // ĐĂNG XUẤT
     document.getElementById('btn-logout').addEventListener('click', () => {
         if(confirm('Bạn có chắc muốn đăng xuất?')) {
             localStorage.removeItem('IS_LOGGED_IN');
@@ -8,28 +11,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // NÚT ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC (DATA.JS)
+    const btnSync = document.getElementById('btn-sync-data');
+    if(btnSync) {
+        btnSync.addEventListener('click', () => {
+            let msg = "CẢNH BÁO!\n\nHành động này sẽ XÓA TOÀN BỘ dữ liệu lưu tạm trên trình duyệt và nạp lại bản gốc từ file data.js.\n\nNếu bạn vừa thêm truyện mới mà chưa Copy code dán vào file data.js thì dữ liệu đó sẽ bị mất.\n\nBạn có chắc chắn muốn Đồng bộ không?";
+            if(confirm(msg)) {
+                localStorage.removeItem('STORIES_DB');
+                window.location.reload();
+            }
+        });
+    }
+
+    // Render checkbox 35 thể loại
     const catContainer = document.getElementById('m-categories-container');
-    catContainer.innerHTML = ALL_CATEGORIES.map(cat => `
-        <div class="col-4 col-md-3">
-            <div class="form-check">
-                <input class="form-check-input cat-checkbox" type="checkbox" value="${cat}" id="cat-${cat.replace(/\s+/g, '')}">
-                <label class="form-check-label small" for="cat-${cat.replace(/\s+/g, '')}">${cat}</label>
+    if(catContainer) {
+        catContainer.innerHTML = ALL_CATEGORIES.map(cat => `
+            <div class="col-4 col-md-3">
+                <div class="form-check">
+                    <input class="form-check-input cat-checkbox" type="checkbox" value="${cat}" id="cat-${cat.replace(/\s+/g, '')}">
+                    <label class="form-check-label small" for="cat-${cat.replace(/\s+/g, '')}">${cat}</label>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 
     renderAdminTable();
 
-    // SỰ KIỆN: Lắng nghe người dùng gõ vào ô tìm kiếm chương
-    document.getElementById('search-chapter-input').addEventListener('input', function(e) {
-        const storyId = parseInt(document.getElementById('c-story-id').value);
-        const story = window.appDB.find(s => s.id === storyId);
-        if (story) {
-            renderChapterListSidebar(story, e.target.value);
-        }
-    });
+    // SỰ KIỆN TÌM KIẾM CHƯƠNG THÔNG MINH
+    const searchInput = document.getElementById('search-chapter-input');
+    if(searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const storyId = parseInt(document.getElementById('c-story-id').value);
+            const story = window.appDB.find(s => s.id === storyId);
+            if (story) renderChapterListSidebar(story, e.target.value);
+        });
+    }
 });
 
+// ==============================================================
+// 1. QUẢN LÝ DANH SÁCH TRUYỆN
+// ==============================================================
 function renderAdminTable() {
     const stories = window.appDB;
     const tbody = document.getElementById('admin-table-body');
@@ -42,7 +64,7 @@ function renderAdminTable() {
     tbody.innerHTML = sortedStories.map(story => `
         <tr>
             <td class="text-center fw-bold">${story.id}</td>
-            <td><img src="${story.cover}" style="width: 40px; height: 60px; object-fit: cover;" class="rounded"></td>
+            <td><img src="${story.cover}" style="width: 40px; height: 60px; object-fit: cover;" class="rounded shadow-sm"></td>
             <td><div class="fw-bold text-primary">${story.title}</div>${story.isHot ? '<span class="badge bg-danger">HOT</span>' : ''}</td>
             <td>${story.author}</td>
             <td><span class="badge bg-info text-dark">${story.latestChapter}</span></td>
@@ -65,6 +87,9 @@ function deleteStory(id) {
     }
 }
 
+// ==============================================================
+// 2. FORM THÊM & SỬA TRUYỆN
+// ==============================================================
 const storyModal = new bootstrap.Modal(document.getElementById('storyModal'));
 
 function openAddModal() {
@@ -110,12 +135,9 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
     const action = document.getElementById('form-action').value;
     const selectedCats = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
 
-    // XỬ LÝ MẶC ĐỊNH NẾU BỎ TRỐNG TÁC GIẢ VÀ ẢNH
-    let authorVal = document.getElementById('m-author').value.trim();
-    if (authorVal === "") authorVal = "Không rõ";
-
-    let coverVal = document.getElementById('m-cover').value.trim();
-    if (coverVal === "") coverVal = "https://via.placeholder.com/300x420/1a1a1a/ffffff?text=Chua+Co+Anh"; // Ảnh đen chữ trắng
+    // MẶC ĐỊNH CHO TÁC GIẢ VÀ ẢNH NẾU BỎ TRỐNG
+    let authorVal = document.getElementById('m-author').value.trim() || "Không rõ";
+    let coverVal = document.getElementById('m-cover').value.trim() || "https://via.placeholder.com/300x420/1a1a1a/ffffff?text=No+Cover";
 
     if (action === 'add') {
         const newId = stories.length > 0 ? Math.max(...stories.map(s => s.id)) + 1 : 1;
@@ -126,11 +148,12 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
             cover: coverVal,
             categories: selectedCats.length > 0 ? selectedCats : ["Khác"],
             status: document.getElementById('m-status').value,
-            latestChapter: parseInt(document.getElementById('m-chapter').value),
+            latestChapter: parseInt(document.getElementById('m-chapter').value) || 0,
             isHot: document.getElementById('m-hot').checked,
             description: document.getElementById('m-desc').value.trim(),
             views: 0, votes: 0, updateTime: "Vừa xong",
-            chapterList: []
+            chapterList: [],
+            comments: []
         });
     } else {
         const id = parseInt(document.getElementById('form-story-id').value);
@@ -152,7 +175,7 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
 });
 
 // ==============================================================
-// 3. QUẢN LÝ CHƯƠNG VÀ TÌM KIẾM CHƯƠNG
+// 3. QUẢN LÝ CHƯƠNG VÀ TÌM KIẾM
 // ==============================================================
 const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
 
@@ -180,15 +203,13 @@ function openChapterModal(id) {
     document.getElementById('chapter-editor-area').style.display = 'none';
     document.getElementById('chapter-welcome-area').style.display = 'block';
     
-    // Reset ô tìm kiếm
     document.getElementById('search-chapter-input').value = "";
 
     renderChapterListSidebar(stories[storyIndex]);
     chapterModal.show();
 }
 
-// Hàm render danh sách chương CÓ HỖ TRỢ LỌC (searchTerm)
-// Hàm render danh sách chương CÓ HỖ TRỢ LỌC TÌM KIẾM THÔNG MINH
+// RENDER DANH SÁCH CHƯƠNG (CÓ HỖ TRỢ LỌC THÔNG MINH)
 function renderChapterListSidebar(story, searchTerm = "") {
     const container = document.getElementById('chapter-list-container');
     if (story.chapterList.length === 0) {
@@ -196,23 +217,15 @@ function renderChapterListSidebar(story, searchTerm = "") {
         return;
     }
 
-    // Sắp xếp giảm dần (chương mới nhất nằm trên)
     let sortedChaps = [...story.chapterList].sort((a,b) => b.chapNum - a.chapNum);
     
-    // LỌC TÌM KIẾM
     if (searchTerm.trim() !== "") {
         const term = searchTerm.toLowerCase().trim();
-        
-        // Tự động loại bỏ chữ "chương" hoặc "chuong" nếu người dùng gõ vào (Ví dụ: "chương 10" -> "10")
         const cleanNum = term.replace(/^(chương|chuong)\s*/i, '').trim();
 
         sortedChaps = sortedChaps.filter(chap => {
-            // 1. Tìm CHÍNH XÁC số chương (Nhập 10 chỉ ra đúng 10, không ra 1010)
             const isExactNum = chap.chapNum.toString() === cleanNum;
-            
-            // 2. Tìm GẦN ĐÚNG trong Tên phụ (Ví dụ gõ "khởi đầu" sẽ ra các chương chứa từ này)
             const isMatchSubTitle = chap.subTitle && chap.subTitle.toLowerCase().includes(term);
-            
             return isExactNum || isMatchSubTitle;
         });
     }
@@ -267,6 +280,7 @@ function prepareEditChapter(storyId, chapNum) {
     document.getElementById('c-content').value = chap.content || "";
 }
 
+// LƯU CHƯƠNG VÀO DATABASE
 document.getElementById('chapter-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const storyId = parseInt(document.getElementById('c-story-id').value);
@@ -287,11 +301,11 @@ document.getElementById('chapter-form').addEventListener('submit', function(e) {
 
     if (action === 'add') {
         story.chapterList.push(chapData);
-        story.latestChapter = chapNum; 
+        story.latestChapter = Math.max(...story.chapterList.map(c => c.chapNum));
         story.updateTime = "Vừa xong";
     } else {
         const chapIndex = story.chapterList.findIndex(c => c.chapNum === chapNum);
-        story.chapterList[chapIndex] = chapData;
+        if(chapIndex !== -1) story.chapterList[chapIndex] = chapData;
     }
 
     stories[storyIndex] = story;
@@ -302,7 +316,6 @@ document.getElementById('chapter-form').addEventListener('submit', function(e) {
     document.getElementById('chapter-editor-area').style.display = 'none';
     document.getElementById('chapter-welcome-area').style.display = 'block';
     
-    // Giữ lại từ khóa tìm kiếm khi vừa lưu xong
     const currentSearch = document.getElementById('search-chapter-input').value;
     renderChapterListSidebar(story, currentSearch);
     renderAdminTable(); 

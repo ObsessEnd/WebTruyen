@@ -7,9 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-    <script>
-        if (localStorage.getItem('IS_LOGGED_IN') !== 'true') window.location.href = 'login.html';
-    </script>
+    
     <style>
         .chapter-list-scroll { max-height: 500px; overflow-y: auto; }
         .chap-item.active { background-color: #0d6efd; color: white; }
@@ -31,13 +29,16 @@
             </div>
         </div>
     </nav>
-
-    <div class="container-fluid py-4 px-lg-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-primary"><i class="fas fa-tasks me-2"></i>Quản Lý Truyện</h3>
-            <button class="btn btn-success fw-bold shadow-sm" onclick="openAddModal()">
-                <i class="fas fa-plus me-1"></i> Thêm Truyện Mới
-            </button>
+            <div>
+                <button class="btn btn-warning fw-bold shadow-sm me-2" id="btn-sync-data" title="Tải lại dữ liệu gốc từ file data.js">
+                    <i class="fas fa-sync-alt me-1"></i> Đồng bộ File Gốc
+                </button>
+                <button class="btn btn-success fw-bold shadow-sm" onclick="openAddModal()">
+                    <i class="fas fa-plus me-1"></i> Thêm Truyện Mới
+                </button>
+            </div>
         </div>
 
         <div class="card border-0 shadow-sm">
