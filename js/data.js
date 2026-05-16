@@ -590,3 +590,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // Ép trình duyệt xóa DB cũ và nạp lại 25 truyện mới
+
+// ==============================================================
+// ==============================================================
+// TỰ ĐỘNG LIÊN KẾT CHỮ VÀ Ô CHECKBOX / RADIO (TỐI ƯU UX)
+// ==============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Tìm tất cả các cụm chứa ô bấm (cả vuông và tròn) trên màn hình
+    const allFormChecks = document.querySelectorAll('.form-check');
+    
+    allFormChecks.forEach((checkDiv, index) => {
+        // Quét tìm cả checkbox (Thể loại) và radio (Sắp xếp, Tình trạng, Số chương)
+        const input = checkDiv.querySelector('input[type="checkbox"], input[type="radio"]');
+        const label = checkDiv.querySelector('label');
+        
+        // Nếu tìm thấy cả ô và chữ, nhưng ô chưa có ID
+        if (input && label && !input.id) {
+            const uniqueId = 'auto-input-' + index; // Tạo ra 1 cái tên duy nhất
+            input.id = uniqueId;                    // Gắn vào ô (vuông/tròn)
+            label.setAttribute('for', uniqueId);    // Nối chữ vào ô đó
+        }
+    });
+});

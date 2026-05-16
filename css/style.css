@@ -187,3 +187,8 @@ body {
         margin-bottom: 5px;
     }
 }
+/* Biến con trỏ chuột thành hình bàn tay khi chỉ vào chữ ở ô Checkbox */
+.form-check-label {
+    cursor: pointer;
+    user-select: none; /* Chống đen chữ khi lỡ click đúp 2 lần */
+}
