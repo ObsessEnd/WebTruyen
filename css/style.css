@@ -191,4 +191,58 @@ body {
 .form-check-label {
     cursor: pointer;
     user-select: none; /* Chống đen chữ khi lỡ click đúp 2 lần */
-}
+}        /* CHUYỂN ĐỔI MƯỢT MÀ VÀ MÀU SẮC */
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        .reading-box { transition: background-color 0.3s ease, border-color 0.3s ease; border-radius: 8px; }
+        
+        /* GIAO DIỆN THEME */
+        .theme-light { background-color: #e9ecef; color: #212529; }
+        .theme-light .reading-box { background-color: #ffffff; border: 1px solid #dee2e6; }
+        
+        .theme-dark { background-color: #121212; color: #e0e0e0; }
+        .theme-dark .reading-box { background-color: #1e1e1e; border: 1px solid #333; }
+        .theme-dark .text-primary { color: #66b0ff !important; }
+        .theme-dark .text-muted { color: #aaa !important; }
+        
+        .theme-sepia { background-color: #f4ecd8; color: #5b4636; }
+        .theme-sepia .reading-box { background-color: #fdf6e3; border: 1px solid #e5d9c5; }
+
+
+
+        
+/* CSS TỐI ƯU NÚT GẬP: BIẾN THÀNH TAP DỌC MÉP TRÁI KHÔNG CHE CHỮ */
+        #btn-toggle-menu {
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        /* Trạng thái khi menu bị ẩn: Nép hẳn vào lề trái màn hình, hiện rõ nét */
+        .menu-hidden-state #btn-toggle-menu {
+            position: fixed !important;
+            top: 30% !important; /* Đẩy xuống tầm giữa màn hình để ngón cái dễ chạm */
+            left: 0 !important;
+            bottom: auto !important;
+            transform: none !important;
+            border-radius: 0 8px 8px 0 !important; /* Bo góc tròn bên phải, phẳng bên trái bám tường */
+            padding: 12px 8px !important; /* Tạo thành một cái dải dọc tinh tế */
+            opacity: 1 !important; /* Hiện rõ nét 100%, không mờ */
+            background-color: #1a1a1a !important; /* Giữ màu đen ngầu của menu */
+            border: 1px solid #333 !important;
+            border-left: none !important; /* Phẳng lỳ bám sát mép trái */
+            z-index: 1040;
+        }
+        
+        /* Hiệu ứng đổi màu vàng khi người dùng chạm vào cái tab dọc */
+        .menu-hidden-state #btn-toggle-menu:hover,
+        .menu-hidden-state #btn-toggle-menu:active {
+            background-color: #222 !important;
+            border-color: #ffc107 !important; /* Lên viền vàng Gold cực sang */
+        }
+        /* KHI BẬT CHẾ ĐỘ ĐÁNH DẤU: Biến chuột thành hình ngón tay khi rê vào dòng chữ */
+        .bookmark-mode-active .chap-line-wrapper {
+            cursor: pointer;
+        }
+        
+        /* Hiệu ứng đổi màu nhẹ khi rê chuột qua dòng chữ lúc đang chọn (tùy chọn để UX đẹp hơn) */
+        .bookmark-mode-active .chap-line-wrapper:hover .chap-line {
+            opacity: 0.8;
+        }

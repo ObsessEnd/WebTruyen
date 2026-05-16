@@ -1,0 +1,5 @@
+RewriteEngine On
+# Nếu người dùng gõ link không có đuôi .html
+RewriteCond %{REQUEST_FILENAME} !-f
+# Máy chủ tự động gắn ngầm đuôi .html vào để gọi đúng file gốc
+RewriteRule ^([^\.]+)$ $1.html [NC,L]

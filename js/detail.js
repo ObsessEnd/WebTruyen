@@ -55,10 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if(bcTitle) bcTitle.innerText = story.title;
     document.title = `${story.title} - Thiên Đạo`;
 
-    const categoriesHTML = (story.categories && Array.isArray(story.categories)) 
+
+const categoriesHTML = (story.categories && Array.isArray(story.categories)) 
         ? story.categories.map(cat => `<a href="the-loai.html?type=${encodeURIComponent(cat)}" class="badge bg-light text-primary border text-decoration-none me-1 mb-1 transition-hover">${cat}</a>`).join('')
         : `<span class="badge bg-light text-secondary border">Chưa phân loại</span>`;
 
+    // --- CODE BOOKMARK THÊM MỚI BẮT ĐẦU TỪ ĐÂY ---
+    const bookmarkData = JSON.parse(localStorage.getItem('BOOKMARK_STORY_' + story.id));
+    let readButtonHTML = '';
+
+    if (bookmarkData && bookmarkData.chap > 0) {
+        // Nếu đã đọc dở: Hiện nút Đọc Tiếp màu vàng
+        readButtonHTML = `
+            <a href="read.html?id=${story.id}&chap=${bookmarkData.chap}" class="btn btn-warning px-4 fw-bold text-dark shadow-sm"><i class="fas fa-bookmark me-2"></i>Đọc Tiếp Ch. ${bookmarkData.chap}</a>
+            <a href="read.html?id=${story.id}&chap=1" class="btn btn-outline-primary px-3 fw-bold">Từ Đầu</a>
+            <a href="read.html?id=${story.id}&chap=${story.latestChapter}" class="btn btn-outline-danger px-3 fw-bold">Mới Nhất</a>
+        `;
+    } else {
+        // Nếu chưa đọc: Hiện như cũ
+        readButtonHTML = `
+            <a href="read.html?id=${story.id}&chap=1" class="btn btn-primary px-4 fw-bold shadow-sm"><i class="fas fa-book-open me-2"></i>Đọc Từ Đầu</a>
+            <a href="read.html?id=${story.id}&chap=${story.latestChapter}" class="btn btn-outline-danger px-4 fw-bold"><i class="fas fa-step-forward me-2"></i>Chương Mới Nhất</a>
+        `;
+    }
     // ==========================================
     // 3. IN NỘI DUNG RA GIAO DIỆN
     // ==========================================
@@ -80,9 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li class="mb-2"><i class="fas fa-star text-warning w-20px"></i> <strong>Đánh giá:</strong> <span class="text-danger fw-bold fs-5">${avgRating}</span>/5 <span class="text-muted">(Từ ${totalComments} lượt bình luận)</span></li>
                 </ul>
 
-                <div class="d-flex gap-2 mb-4">
-                    <a href="read.html?id=${story.id}&chap=1" class="btn btn-primary px-4 fw-bold"><i class="fas fa-book-open me-2"></i>Đọc Từ Đầu</a>
-                    <a href="read.html?id=${story.id}&chap=${story.latestChapter}" class="btn btn-outline-danger px-4 fw-bold"><i class="fas fa-step-forward me-2"></i>Chương Mới Nhất</a>
+       <div class="d-flex flex-wrap gap-2 mb-4">
+                    ${readButtonHTML}
                 </div>
             </div>
         </div>

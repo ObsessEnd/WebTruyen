@@ -12,7 +12,7 @@
     
     <style>
         /* CHUYỂN ĐỔI MƯỢT MÀ VÀ MÀU SẮC TƯƠNG PHẢN */
-        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        body { transition: background-color 0.3s ease, color 0.3s ease; padding-top: 56px; }
         .reading-box { transition: background-color 0.3s ease, border-color 0.3s ease; border-radius: 8px; }
         
         /* 1. GIAO DIỆN SÁNG */
@@ -40,15 +40,31 @@
         .theme-sepia .btn-outline-secondary { color: #5b4636; border-color: #c4b397; }
         .theme-sepia .btn-outline-secondary:hover { background-color: #dccbaf; color: #3a2d22; }
 
-        /* Font chữ đọc truyện */
-        #chapter-content { font-family: 'Palatino Linotype', 'Times New Roman', serif; }
+        /* CẤU TRÚC ĐOẠN VĂN VÀ VÙNG BẤM CẮM CỜ BÊN TRÁI RỜI KHỎI CHỮ TRUYỆN */
+        .chap-line-wrapper { display: flex; align-items: flex-start; margin-bottom: 1rem; position: relative; }
         
-        /* Ẩn mũi tên lên xuống của thẻ input type=number */
+        /* Cột chứa cờ bên trái, tách biệt hoàn toàn */
+        .line-bookmark-zone { width: 35px; min-width: 35px; display: flex; justify-content: center; align-items: center; height: 1.8em; margin-right: 5px; }
+        .bookmark-btn-trigger { color: #ccc; cursor: pointer; opacity: 0; transition: opacity 0.2s, color 0.2s; font-size: 0.9rem; }
+        .bookmark-btn-trigger:hover { color: #ffc107; }
+        
+        /* Chữ truyện */
+        .chap-line { flex-grow: 1; margin-bottom: 0 !important; font-family: 'Palatino Linotype', 'Times New Roman', serif; text-align: justify; }
+
+        /* KHI BẬT CHẾ ĐỘ ĐÁNH DẤU: Hiện toàn bộ nút bấm rìa trái lên */
+        .bookmark-mode-active .bookmark-btn-trigger { opacity: 0.5; }
+        .bookmark-mode-active .bookmark-btn-trigger.has-flag { opacity: 1 !important; color: #dc3545 !important; }
+        .bookmark-mode-active .chap-line-wrapper:hover .bookmark-btn-trigger { opacity: 1; color: #ffc107; }
+        
+        /* Cờ đỏ cố định của dòng đã lưu luôn luôn hiện kể cả khi tắt chế độ chọn */
+        .bookmark-btn-trigger.has-flag { opacity: 1 !important; color: #dc3545 !important; }
+
+        /* Ẩn mũi tên input number */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="theme-light transition-hover" id="read-body">
+<body class="theme-light" id="read-body">
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
@@ -68,307 +84,99 @@
                             <ul class="dropdown-menu border-0 shadow-lg p-2" style="min-width: 520px;">
                                 <li>
                                     <div class="row g-2 px-2">
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Tiên+Hiệp"
-                          >Tiên Hiệp</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Kiếm+Hiệp"
-                          >Kiếm Hiệp</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Ngôn+Tình"
-                          >Ngôn Tình</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Đam+Mỹ"
-                          >Đam Mỹ</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Bách+Hợp"
-                          >Bách Hợp</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Quan+Trường"
-                          >Quan Trường</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Võng+Du"
-                          >Võng Du</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Khoa+Huyễn"
-                          >Khoa Huyễn</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Hệ+Thống"
-                          >Hệ Thống</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Huyền+Huyễn"
-                          >Huyền Huyễn</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Dị+Giới"
-                          >Dị Giới</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Dị+Năng"
-                          >Dị Năng</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Quân+Sự"
-                          >Quân Sự</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Lịch+Sử"
-                          >Lịch Sử</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Xuyên+Không"
-                          >Xuyên Không</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Xuyên+Nhanh"
-                          >Xuyên Nhanh</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Trọng+Sinh"
-                          >Trọng Sinh</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Trinh+Thám"
-                          >Trinh Thám</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Linh+Dị"
-                          >Linh Dị</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Ngược"
-                          >Ngược</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Sắc"
-                          >Sắc</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Sủng"
-                          >Sủng</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Cung+Đấu"
-                          >Cung Đấu</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Nữ+Cường"
-                          >Nữ Cường</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Gia+Đấu"
-                          >Gia Đấu</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Đông+Phương"
-                          >Đông Phương</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Đô+Thị"
-                          >Đô Thị</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Điền+Văn"
-                          >Điền Văn</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Mạt+Thế"
-                          >Mạt Thế</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Truyện+Teen"
-                          >Truyện Teen</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Nữ+Phụ"
-                          >Nữ Phụ</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Light+Novel"
-                          >Light Novel</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Đoản+Văn"
-                          >Đoản Văn</a
-                        >
-                      </div>
-
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Hiện+Đại"
-                          >Hiện Đại</a
-                        >
-                      </div>
-                      <div class="col-4">
-                        <a
-                          class="dropdown-item rounded px-2"
-                          href="the-loai.html?type=Khác"
-                          >Khác</a
-                        >
-                      </div>
-                    </div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Tiên+Hiệp">Tiên Hiệp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Kiếm+Hiệp">Kiếm Hiệp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Ngôn+Tình">Ngôn Tình</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đam+Mỹ">Đam Mỹ</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Bách+Hợp">Bách Hợp</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Quan+Trường">Quan Trường</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Võng+Du">Võng Du</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Khoa+Huyễn">Khoa Huyễn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Hệ+Thống">Hệ Thống</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Huyền+Huyễn">Huyền Huyễn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Dị+Giới">Dị Giới</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Dị+Năng">Dị Năng</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Quân+Sự">Quân Sự</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Lịch+Sử">Lịch Sử</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Xuyên+Không">Xuyên Không</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Xuyên+Nhanh">Xuyên Nhanh</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Trọng+Sinh">Trọng Sinh</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Trinh+Thám">Trinh Thám</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Linh+Dị">Linh Dị</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Ngược">Ngược</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Sắc">Sắc</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Sủng">Sủng</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Cung+Đấu">Cung Đấu</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Nữ+Cường">Nữ Cường</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Gia+Đấu">Gia Đấu</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đông+Phương">Đông Phương</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đô+Thị">Đô Thị</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Điền+Văn">Điền Văn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Mạt Thế">Mạt Thế</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Truyện+Teen">Truyện Teen</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Nữ+Phụ">Nữ Phụ</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Light+Novel">Light Novel</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Đoản+Văn">Đoản Văn</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Hiện+Đại">Hiện Đại</a></div>
+                                        <div class="col-4"><a class="dropdown-item rounded px-2" href="the-loai.html?type=Khác">Khác</a></div>
+                                    </div>
                                 </li>
                             </ul>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="index.html#ranking">Xếp hạng</a></li>
                     </ul>
-                    
                     <button class="btn btn-outline-warning btn-sm ms-lg-3 fw-bold" data-bs-toggle="modal" data-bs-target="#searchModal">
                         <i class="fas fa-search me-1"></i> Tìm truyện
                     </button>
-                    <div class="ms-lg-3 d-flex gap-2" id="nav-auth-section"></div>
                 </div>
             </div>
         </nav>
     </header>
-    <div style="height: 70px;"></div>
 
-    <div class="container mt-3">
-        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 mb-4 reading-box">
-            <nav aria-label="breadcrumb" class="mb-2 mb-md-0">
+    <main class="container py-4 mb-5">
+        
+        <div class="p-3 mb-3 reading-box">
+            <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-primary"><i class="fas fa-home"></i></a></li>
                     <li class="breadcrumb-item fw-bold"><a href="#" id="read-story-link" class="text-decoration-none text-primary">Tên Truyện</a></li>
                     <li class="breadcrumb-item active" aria-current="page" id="read-chap-bc">Chương ?</li>
                 </ol>
             </nav>
-            
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-light border fw-bold" style="color: #212529;" onclick="changeTheme('theme-light')" title="Nền Sáng"><i class="fas fa-sun text-warning me-1"></i> Sáng</button>
-                    <button class="btn btn-sm btn-dark fw-bold" onclick="changeTheme('theme-dark')" title="Nền Tối"><i class="fas fa-moon me-1"></i> Tối</button>
-                    <button class="btn btn-sm border fw-bold" style="background-color: #f4ecd8; color: #5b4636; border-color: #dccbaf;" onclick="changeTheme('theme-sepia')" title="Nền Giấy Cổ"><i class="fas fa-book-open me-1"></i> Giấy</button>
-                </div>
-                <div class="d-flex gap-1 align-items-center border-start ps-3">
-                    <button class="btn btn-sm btn-outline-secondary fw-bold px-2" onclick="changeFontSize(-2)">A-</button>
-                    <input type="number" id="font-size-input" class="form-control form-control-sm text-center text-primary fw-bold px-1 mx-1 shadow-none border-secondary bg-transparent" style="width: 55px; height: 31px;" min="14" max="40" onchange="manualChangeFontSize(this.value)">
-                    <button class="btn btn-sm btn-outline-secondary fw-bold px-2" onclick="changeFontSize(2)">A+</button>
+        </div>
+
+        <div id="sticky-reading-menu" style="position: sticky; top: 70px; z-index: 1030; transition: all 0.3s; margin-bottom: 25px;">
+            <div id="reading-menu-content" class="p-3 rounded shadow-lg mb-0" style="background-color: #1a1a1a; border: 1px solid #333;">
+                <div class="d-flex align-items-center flex-wrap gap-2 justify-content-center justify-content-md-start">
+                    
+                    <div class="btn-group shadow-sm">
+                        <button class="btn btn-light fw-bold" style="color: #ffc107;" onclick="changeTheme('theme-light')">Sáng</button>
+                        <button class="btn btn-dark fw-bold border-secondary" onclick="changeTheme('theme-dark')">Tối</button>
+                        <button class="btn fw-bold border-secondary" style="background-color: #f4ecd8; color: #5b4636;" onclick="changeTheme('theme-sepia')">Giấy</button>
+                    </div>
+                    
+                    <div class="text-secondary mx-2 fs-4 d-none d-md-block">|</div>
+                    
+                    <div class="btn-group shadow-sm">
+                        <button class="btn btn-dark border-secondary fw-bold px-3 text-light" onclick="changeFontSize(-2)">A-</button>
+                        <input type="text" id="font-size-input" class="form-control text-center bg-dark text-primary border-secondary" style="width: 60px; font-weight: bold;" value="20" readonly>
+                        <button class="btn btn-dark border-secondary fw-bold px-3 text-light" onclick="changeFontSize(2)">A+</button>
+                    </div>
+
+                    <button id="btn-manual-bookmark" class="btn btn-dark border-secondary text-warning fw-bold ms-auto px-4 shadow-sm" title="Chọn dòng để đánh cấu">
+                        <i class="far fa-bookmark fs-5" id="bookmark-icon"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <main class="container mb-5">
-        <div id="read-container" class="p-4 p-md-5 reading-box">
-            
+            <div class="text-center w-100" style="margin-top: -1px;">
+                <button id="btn-toggle-menu" class="btn btn-dark border-secondary shadow-lg" style="border-radius: 0 0 12px 12px; padding: 2px 40px; background-color: #1a1a1a;">
+                    <i class="fas fa-chevron-up text-light" id="toggle-menu-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="read-container" class="p-4 p-md-5 reading-box mt-3">
             <h3 class="text-center text-primary fw-bold mb-2" id="read-title">Tên Truyện</h3>
             <h5 class="text-center text-muted mb-4 pb-3 border-bottom" id="read-chap-title">Chương ?</h5>
 
@@ -378,7 +186,7 @@
                 <button id="btn-next-top" class="btn btn-primary"><i class="fas fa-arrow-right"></i></button>
             </div>
 
-            <div id="chapter-content" style="line-height: 2;">
+            <div id="chapter-content">
                 <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
             </div>
 
@@ -387,8 +195,8 @@
                 <a href="#" id="btn-list-bot" class="btn btn-outline-primary"><i class="fas fa-list"></i> Mục lục</a>
                 <button id="btn-next-bot" class="btn btn-primary">Chương sau <i class="fas fa-arrow-right"></i></button>
             </div>
-
         </div>
+
     </main>
 
     <footer class="bg-dark py-4 text-center text-white mt-auto">
@@ -437,46 +245,6 @@
                                             <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="100-500"><label class="form-check-label">100-500</label></div>
                                             <div class="form-check"><input class="form-check-input" type="radio" name="chap" value="500-999999"><label class="form-check-label">> 500</label></div>
                                         </div>
-                                    </div>
-                                </div>
-                                <h6 class="fw-bold text-info mb-2">Thể loại</h6>
-                                <div class="border p-3 bg-white rounded shadow-sm mb-4">
-                                    <div class="row g-2">
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Tiên Hiệp"><label class="form-check-label small">Tiên Hiệp</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Kiếm Hiệp"><label class="form-check-label small">Kiếm Hiệp</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Ngôn Tình"><label class="form-check-label small">Ngôn Tình</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Đam Mỹ"><label class="form-check-label small">Đam Mỹ</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Bách Hợp"><label class="form-check-label small">Bách Hợp</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Quan Trường"><label class="form-check-label small">Quan Trường</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Võng Du"><label class="form-check-label small">Võng Du</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Khoa Huyễn"><label class="form-check-label small">Khoa Huyễn</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Hệ Thống"><label class="form-check-label small">Hệ Thống</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Huyền Huyễn"><label class="form-check-label small">Huyền Huyễn</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Dị Giới"><label class="form-check-label small">Dị Giới</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Dị Năng"><label class="form-check-label small">Dị Năng</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Quân Sự"><label class="form-check-label small">Quân Sự</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Lịch Sử"><label class="form-check-label small">Lịch Sử</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Xuyên Không"><label class="form-check-label small">Xuyên Không</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Xuyên Nhanh"><label class="form-check-label small">Xuyên Nhanh</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Trọng Sinh"><label class="form-check-label small">Trọng Sinh</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Trinh Thám"><label class="form-check-label small">Trinh Thám</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Linh Dị"><label class="form-check-label small">Linh Dị</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Ngược"><label class="form-check-label small">Ngược</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Sắc"><label class="form-check-label small">Sắc</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Sủng"><label class="form-check-label small">Sủng</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Cung Đấu"><label class="form-check-label small">Cung Đấu</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Nữ Cường"><label class="form-check-label small">Nữ Cường</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Gia Đấu"><label class="form-check-label small">Gia Đấu</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Đông Phương"><label class="form-check-label small">Đông Phương</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Đô Thị"><label class="form-check-label small">Đô Thị</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Điền Văn"><label class="form-check-label small">Điền Văn</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Mạt Thế"><label class="form-check-label small">Mạt Thế</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Truyện Teen"><label class="form-check-label small">Truyện Teen</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Nữ Phụ"><label class="form-check-label small">Nữ Phụ</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Light Novel"><label class="form-check-label small">Light Novel</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Đoản Văn"><label class="form-check-label small">Đoản Văn</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Hiện Đại"><label class="form-check-label small">Hiện Đại</label></div></div>
-                                        <div class="col-4 col-md-2"><div class="form-check"><input class="form-check-input cat-check" type="checkbox" value="Khác"><label class="form-check-label small">Khác</label></div></div>
                                     </div>
                                 </div>
                                 <div class="input-group shadow-sm">

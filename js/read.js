@@ -1,13 +1,13 @@
 // ==========================================
-// FILE: js/read.js (LOGIC ĐỌC TRUYỆN & CÀI ĐẶT)
+// FILE: js/read.js (LOGIC ĐỌC TRUYỆN, CÀI ĐẶT & HỆ THỐNG CẮM CỜ DÒNG TRÁI)
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. KHỞI TẠO CÀI ĐẶT TỪ LOCALSTORAGE TRƯỚC (Để không bị nháy màn hình)
     const body = document.getElementById('read-body');
-    const content = document.getElementById('chapter-content');
+    const contentBox = document.getElementById('chapter-content');
     const fontSizeInput = document.getElementById('font-size-input');
 
+    // 1. ĐỌC CÀI ĐẶT GIAO DIỆN TỪ MÁY
     let currentTheme = localStorage.getItem('read_theme') || 'theme-light';
     let currentFontSize = parseInt(localStorage.getItem('read_font_size')) || 20;
 
@@ -15,107 +15,101 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.remove('theme-light', 'theme-dark', 'theme-sepia');
         body.classList.add(currentTheme);
     }
-    if (content) content.style.fontSize = currentFontSize + 'px';
+    if (contentBox) contentBox.style.fontSize = currentFontSize + 'px';
     if (fontSizeInput) fontSizeInput.value = currentFontSize;
 
-
-    // 2. KHỞI TẠO DỮ LIỆU TRUYỆN
+    // 2. KHỞI TẠO DỮ LIỆU ĐƯỜNG DẪN
     const params = new URLSearchParams(window.location.search);
     const storyId = parseInt(params.get('id'));
     const currentChap = parseInt(params.get('chap'));
     const stories = window.appDB;
 
-    const story = stories.find(s => s.id === storyId);
     const container = document.getElementById('read-container');
+    const story = stories ? stories.find(s => s.id === storyId) : null;
 
-    // Kiểm tra lỗi nếu URL không hợp lệ
     if (!story || !currentChap || currentChap < 1 || currentChap > story.latestChapter) {
-        container.innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
-                <h3 class="text-danger fw-bold">Nội dung không tồn tại!</h3>
-                <p>Đạo hữu đã đi nhầm vào một không gian sụp đổ.</p>
-                <button onclick="window.history.back()" class="btn btn-primary mt-3"><i class="fas fa-arrow-left me-2"></i>Quay lại</button>
-            </div>`;
+        if(container) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+                    <h3 class="text-danger fw-bold">Nội dung không tồn tại!</h3>
+                    <p>Đạo hữu đã đi nhầm vào một không gian sụp đổ.</p>
+                    <button onclick="window.history.back()" class="btn btn-primary mt-3"><i class="fas fa-arrow-left me-2"></i>Quay lại</button>
+                </div>`;
+        }
         return;
     }
 
-    // 3. GHI NHỚ LỊCH SỬ ĐỌC (Lưu thẳng vào máy)
+    // 3. LƯU LỊCH SỬ CHƯƠNG ĐÃ ĐỌC
     let readHistory = JSON.parse(localStorage.getItem(`read_history_${storyId}`)) || [];
     if (!readHistory.includes(currentChap)) {
         readHistory.push(currentChap);
         localStorage.setItem(`read_history_${storyId}`, JSON.stringify(readHistory));
     }
 
-    // 4. LẤY DỮ LIỆU CỦA CHƯƠNG (TỪ ADMIN)
     let chapData = null;
     if (story.chapterList && Array.isArray(story.chapterList)) {
         chapData = story.chapterList.find(c => c.chapNum === currentChap);
     }
 
-    // 5. RENDER TIÊU ĐỀ & BREADCRUMB
+    // 4. HIỂN THỊ TIÊU ĐỀ
     let chapTitleDisplay = `Chương ${currentChap}`;
-    if (chapData && chapData.subTitle) {
-        chapTitleDisplay += ` - ${chapData.subTitle}`;
-    }
+    if (chapData && chapData.subTitle) chapTitleDisplay += ` - ${chapData.subTitle}`;
 
     document.title = `${chapTitleDisplay} - ${story.title}`;
     
     const bcLink = document.getElementById('read-story-link');
-    bcLink.innerText = story.title;
-    bcLink.href = `story-detail.html?id=${storyId}`;
+    if (bcLink) {
+        bcLink.innerText = story.title;
+        bcLink.href = `story-detail.html?id=${storyId}`;
+    }
     
     document.getElementById('read-chap-bc').innerText = `Chương ${currentChap}`;
     document.getElementById('read-title').innerText = story.title;
     
-    // Gắn icon VIP nếu có
     if (chapData && chapData.isVip) {
         document.getElementById('read-chap-title').innerHTML = `${chapTitleDisplay} <i class="fas fa-crown text-warning ms-2" title="Chương VIP"></i>`;
     } else {
         document.getElementById('read-chap-title').innerText = chapTitleDisplay;
     }
 
-    document.getElementById('btn-list-top').href = `story-detail.html?id=${storyId}`;
-    document.getElementById('btn-list-bot').href = `story-detail.html?id=${storyId}`;
+    const btnListTop = document.getElementById('btn-list-top');
+    const btnListBot = document.getElementById('btn-list-bot');
+    if (btnListTop) btnListTop.href = `story-detail.html?id=${storyId}`;
+    if (btnListBot) btnListBot.href = `story-detail.html?id=${storyId}`;
 
-    // 6. RENDER NỘI DUNG CHÍNH (ĐỒNG BỘ VỚI ADMIN)
+    // 5. ĐỔ VĂN BẢN TRUYỆN (Bọc cấu trúc cột Cờ bên trái rời khỏi chữ)
     if (chapData && chapData.isHidden) {
-        content.innerHTML = `
-            <div class="text-center py-5 my-4 border rounded bg-light">
-                <i class="fas fa-eye-slash fa-4x text-secondary mb-3 opacity-50"></i>
-                <h4 class="text-secondary fw-bold">Chương này đã bị khóa/ẩn</h4>
-                <p class="text-muted">Tác giả hoặc Quản trị viên đã tạm thời ẩn chương này.</p>
-            </div>`;
-            
+        contentBox.innerHTML = `<div class="text-center py-5 border rounded bg-light"><h4 class="text-secondary fw-bold">Chương bị khóa</h4></div>`;
     } else if (chapData && chapData.isVip) {
-        content.innerHTML = `
-            <div class="text-center py-5 my-4 border border-warning rounded" style="background-color: #fff9e6;">
-                <i class="fas fa-crown fa-4x text-warning mb-3"></i>
-                <h3 class="text-warning fw-bold">Chương VIP Đặc Quyền</h3>
-                <p class="text-dark mb-4">Đạo hữu cần nạp thêm linh thạch để phá giải cấm chế của chương này.</p>
-                <button class="btn btn-warning fw-bold text-dark shadow-sm px-4 py-2"><i class="fas fa-gem me-2"></i>Mở Khóa (100 Linh Thạch)</button>
-            </div>`;
-            
+        contentBox.innerHTML = `<div class="text-center py-5 border border-warning rounded" style="background-color: #fff9e6;"><h3 class="text-warning fw-bold">Chương VIP Đặc Quyền</h3></div>`;
     } else if (chapData && chapData.content && chapData.content.trim() !== "") {
-        // Có dữ liệu thật do Admin nhập
         let paragraphs = chapData.content.split('\n');
-        content.innerHTML = paragraphs.map(p => {
+        contentBox.innerHTML = paragraphs.map((p, index) => {
             if(p.trim() === "") return ""; 
-            return `<p class="mb-3">${p.trim()}</p>`;
+            return `
+                <div class="chap-line-wrapper">
+                    <div class="line-bookmark-zone">
+                        <i class="far fa-bookmark bookmark-btn-trigger" data-line="${index}"></i>
+                    </div>
+                    <p class="chap-line" id="line-${index}">${p.trim()}</p>
+                </div>`;
         }).join('');
-        
     } else {
-        // Tạo Dummy Text nếu Admin chưa nhập
-        let dummyContent = `
-            <p class="mb-4 text-danger"><em>*Chú thích: Admin chưa cập nhật nội dung cho chương này. Dưới đây là nội dung mô phỏng.</em></p>
-        `;
-        for(let i = 0; i < 10; i++) {
-            dummyContent += `<p class="mb-3">${story.description} ${story.description}</p>`;
+        let dummyContent = `<p class="mb-4 text-danger"><em>*Chú thích: Admin chưa cập nhật nội dung cho chương này.</em></p>`;
+        for(let i = 1; i <= 10; i++) {
+            dummyContent += `
+                <div class="chap-line-wrapper">
+                    <div class="line-bookmark-zone">
+                        <i class="far fa-bookmark bookmark-btn-trigger" data-line="${i}"></i>
+                    </div>
+                    <p class="chap-line" id="line-${i}">${story.description} ${story.description}</p>
+                </div>`;
         }
-        content.innerHTML = dummyContent;
+        contentBox.innerHTML = dummyContent;
     }
 
-    // 7. XỬ LÝ CHUYỂN TRANG
+    // 6. ĐIỀU HƯỚNG CHUYỂN CHƯƠNG
     const btnPrevTop = document.getElementById('btn-prev-top');
     const btnPrevBot = document.getElementById('btn-prev-bot');
     const btnNextTop = document.getElementById('btn-next-top');
@@ -124,43 +118,182 @@ document.addEventListener('DOMContentLoaded', () => {
     function goToChap(chapNum) { window.location.href = `read.html?id=${storyId}&chap=${chapNum}`; }
 
     if (currentChap <= 1) {
-        btnPrevTop.classList.add('disabled'); btnPrevBot.classList.add('disabled');
+        if(btnPrevTop) btnPrevTop.classList.add('disabled'); 
+        if(btnPrevBot) btnPrevBot.classList.add('disabled');
     } else {
-        btnPrevTop.addEventListener('click', () => goToChap(currentChap - 1));
-        btnPrevBot.addEventListener('click', () => goToChap(currentChap - 1));
+        if(btnPrevTop) btnPrevTop.addEventListener('click', () => goToChap(currentChap - 1));
+        if(btnPrevBot) btnPrevBot.addEventListener('click', () => goToChap(currentChap - 1));
     }
 
     if (currentChap >= story.latestChapter) {
-        btnNextTop.classList.add('disabled'); btnNextBot.classList.add('disabled');
-        btnNextTop.innerText = "Hết truyện"; btnNextBot.innerText = "Hết truyện";
+        if(btnNextTop) { btnNextTop.classList.add('disabled'); btnNextTop.innerText = "Hết truyện"; }
+        if(btnNextBot) { btnNextBot.classList.add('disabled'); btnNextBot.innerText = "Hết truyện"; }
     } else {
-        btnNextTop.addEventListener('click', () => goToChap(currentChap + 1));
-        btnNextBot.addEventListener('click', () => goToChap(currentChap + 1));
+        if(btnNextTop) btnNextTop.addEventListener('click', () => goToChap(currentChap + 1));
+        if(btnNextBot) btnNextBot.addEventListener('click', () => goToChap(currentChap + 1));
     }
+
+ 
+ // ==============================================================
+    // 7. LOGIC GẬP/MỞ BẢNG ĐIỀU KHIỂN ĐEN (TỐI ƯU HIỂN THỊ TAB DỌC TRÁI)
+    // ==============================================================
+    const btnToggle = document.getElementById('btn-toggle-menu');
+    const menuContent = document.getElementById('reading-menu-content');
+    const toggleIcon = document.getElementById('toggle-menu-icon');
+    const stickyMenuWrapper = document.getElementById('sticky-reading-menu');
+
+    if (btnToggle && menuContent && stickyMenuWrapper) {
+        btnToggle.addEventListener('click', () => {
+            menuContent.classList.toggle('d-none'); // Ẩn/hiện khối đen
+            
+            if (menuContent.classList.contains('d-none')) {
+                // KHI MENU BỊ ẨN: Biến thành dải dọc chứa icon bánh răng vàng nổi bật
+                toggleIcon.className = 'fas fa-cog text-warning fs-5'; 
+                stickyMenuWrapper.classList.add('menu-hidden-state'); 
+            } else {
+                // KHI MENU MỞ LẠI: Trả về nút lưỡi ngang giữa màn hình ban đầu
+                toggleIcon.className = 'fas fa-chevron-up text-light'; 
+                stickyMenuWrapper.classList.remove('menu-hidden-state'); 
+            }
+        });
+    }
+// ==============================================================
+// 8. LOGIC BOOKMARK: BẤM NÚT CỜ -> CHẠM DÒNG CHỮ ĐỂ LƯU & TỰ ĐỘNG CUỘN ĐẾN DÒNG
+// ==============================================================
+const btnManualBookmark = document.getElementById('btn-manual-bookmark');
+const bookmarkKey = 'BOOKMARK_STORY_' + storyId;
+let isBookmarkMode = false; 
+
+// Hàm tô đỏ lá cờ ở rìa và làm ĐẬM dòng chữ được lưu
+function applyFlagToLine(lineIndex) {
+    // 1. Reset toàn bộ cờ về rỗng (ẩn đi)
+    document.querySelectorAll('.bookmark-btn-trigger').forEach(btn => {
+        btn.className = 'far fa-bookmark bookmark-btn-trigger'; 
+    });
+    
+    // 2. Xóa trạng thái chữ đậm của các dòng khác trước đó
+    document.querySelectorAll('.chap-line').forEach(p => {
+        p.classList.remove('fw-bold'); 
+    });
+    
+    // 3. Cắm cờ đỏ đặc vào dòng mới được chọn
+    const targetBtn = document.querySelector(`.bookmark-btn-trigger[data-line="${lineIndex}"]`);
+    if (targetBtn) {
+        targetBtn.className = 'fas fa-bookmark bookmark-btn-trigger has-flag'; 
+    }
+    
+    // 4. Ép dòng chữ được chọn hóa ĐẬM lên
+    const targetLine = document.getElementById(`line-${lineIndex}`);
+    if (targetLine) {
+        targetLine.classList.add('fw-bold'); 
+    }
+}
+
+if (contentBox && btnManualBookmark) {
+    const savedData = JSON.parse(localStorage.getItem(bookmarkKey));
+    
+    // Khởi tạo khi vào trang: Nếu có dữ liệu cũ, tự cắm cờ đỏ và làm đậm dòng đó ngay
+    if (savedData && savedData.chap === currentChap) {
+        btnManualBookmark.innerHTML = '<i class="fas fa-bookmark text-danger fs-5" id="bookmark-icon"></i>';
+        setTimeout(() => applyFlagToLine(savedData.lineIndex || 0), 150);
+    }
+
+    // BƯỚC A: BẬT CHẾ ĐỘ ĐÁNH DẤU KHI BẤM ICON CỜ TRÊN MENU ĐEN
+    btnManualBookmark.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        isBookmarkMode = !isBookmarkMode; 
+        
+        if (isBookmarkMode) {
+            if (body) body.classList.add('bookmark-mode-active');
+            btnManualBookmark.innerHTML = '<i class="fas fa-times text-danger fs-5"></i>'; 
+            
+            // Tự động gập menu cài đặt lên cho thoáng màn hình để chọn dòng chữ
+            if (menuContent && !menuContent.classList.contains('d-none') && btnToggle) {
+                btnToggle.click(); 
+            }
+        } else {
+            if (body) body.classList.remove('bookmark-mode-active');
+            btnManualBookmark.innerHTML = '<i class="far fa-bookmark text-warning fs-5" id="bookmark-icon"></i>';
+        }
+    });
+
+    // BƯỚC B: ĐỘC GIẢ CHẠM THẲNG VÀO NGUYÊN DÒNG CHỮ ĐỂ CẮM CỜ
+    contentBox.addEventListener('click', (e) => {
+        if (!isBookmarkMode) return; 
+        
+        const targetWrapper = e.target.closest('.chap-line-wrapper');
+        if (targetWrapper) {
+            const flagBtn = targetWrapper.querySelector('.bookmark-btn-trigger');
+            if (flagBtn) {
+                const lineIndex = parseInt(flagBtn.getAttribute('data-line'));
+                
+                // Tiến hành lưu thông số vào máy
+                localStorage.setItem(bookmarkKey, JSON.stringify({ 
+                    chap: currentChap, 
+                    scrollPos: window.scrollY, 
+                    lineIndex: lineIndex 
+                }));
+                
+                // Vẽ lại cờ và làm đậm dòng chữ
+                applyFlagToLine(lineIndex);
+                
+                // Tự động tắt chế độ chọn dòng, đưa web về trạng thái đọc bình thường
+                isBookmarkMode = false;
+                if (body) body.classList.remove('bookmark-mode-active');
+                btnManualBookmark.innerHTML = '<i class="fas fa-bookmark text-danger fs-5" id="bookmark-icon"></i>';
+            }
+        }
+    });
+} // <-- ĐÃ VÁ LỖI: Thêm dấu đóng ngoặc nhọn này để sửa lỗi đứng vòng xoay loading!
+
+// BƯỚC C: TỰ ĐỘNG PHÓNG THẲNG TỚI DÒNG ĐÃ MARK KHI TẢI TRANG
+setTimeout(() => {
+    const savedData = JSON.parse(localStorage.getItem(bookmarkKey));
+    if (savedData && savedData.chap === currentChap) {
+        const targetLine = document.getElementById(`line-${savedData.lineIndex}`);
+        if (targetLine) {
+            targetLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (savedData.scrollPos > 0) {
+            window.scrollTo({ top: savedData.scrollPos, behavior: 'smooth' });
+        }
+    }
+}, 600); 
+
+// BƯỚC D: TỰ ĐỘNG CẬP NHẬT TỌA ĐỘ CUỘN MÀN HÌNH KHI LƯỚT ĐỌC
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        const savedData = JSON.parse(localStorage.getItem(bookmarkKey));
+        const currentLineIndex = savedData ? savedData.lineIndex : 0;
+        localStorage.setItem(bookmarkKey, JSON.stringify({ 
+            chap: currentChap, 
+            scrollPos: window.scrollY, 
+            lineIndex: currentLineIndex 
+        }));
+    }, 500);
 });
-
-// ==========================================
-// HÀM HỖ TRỢ CÀI ĐẶT GIAO DIỆN TOÀN CỤC
-// ==========================================
-
-function changeTheme(themeClass) {
+}); // Đóng sự kiện DOMContentLoaded chính của trang web
+// ==============================================================
+// THAY ĐỔI THEME VÀ CỠ CHỮ TOÀN CỤC
+window.changeTheme = function(themeClass) {
     const body = document.getElementById('read-body');
     if (body) {
         body.classList.remove('theme-light', 'theme-dark', 'theme-sepia');
         body.classList.add(themeClass);
         localStorage.setItem('read_theme', themeClass); 
     }
-}
+};
 
-function changeFontSize(change) {
+window.changeFontSize = function(change) {
     let currentSize = parseInt(localStorage.getItem('read_font_size')) || 20;
     currentSize += change;
     applyAndSaveFontSize(currentSize);
-}
+};
 
-function manualChangeFontSize(val) {
+window.manualChangeFontSize = function(val) {
     applyAndSaveFontSize(parseInt(val));
-}
+};
 
 function applyAndSaveFontSize(size) {
     if (!size || isNaN(size) || size < 14) size = 14;
