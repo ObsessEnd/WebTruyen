@@ -1,9 +1,39 @@
-// Danh sách 35 thể loại chuẩn
 const ALL_CATEGORIES = ["Tiên Hiệp", "Kiếm Hiệp", "Ngôn Tình", "Đam Mỹ", "Bách Hợp", "Quan Trường", "Võng Du", "Khoa Huyễn", "Hệ Thống", "Huyền Huyễn", "Dị Giới", "Dị Năng", "Quân Sự", "Lịch Sử", "Xuyên Không", "Xuyên Nhanh", "Trọng Sinh", "Trinh Thám", "Linh Dị", "Ngược", "Sắc", "Sủng", "Cung Đấu", "Nữ Cường", "Gia Đấu", "Đông Phương", "Đô Thị", "Điền Văn", "Mạt Thế", "Truyện Teen", "Nữ Phụ", "Light Novel", "Đoản Văn", "Hiện Đại", "Khác"];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Xử lý bật/tắt menu trên điện thoại
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
     
-    // ĐĂNG XUẤT
+    // Tạo 1 lớp nền đen mờ
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+
+    if (btnToggle && sidebar) {
+        btnToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        });
+
+        // Bấm ra ngoài (nền đen) để đóng menu
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        });
+
+        // Đóng menu trên mobile khi bấm chọn một Tab bất kỳ
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth < 768) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+    }
+    // Xử lý Đăng xuất
     document.getElementById('btn-logout').addEventListener('click', () => {
         if(confirm('Bạn có chắc muốn đăng xuất?')) {
             localStorage.removeItem('IS_LOGGED_IN');
@@ -11,11 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NÚT ĐỒNG BỘ DỮ LIỆU TỪ FILE GỐC (DATA.JS)
+    // Đồng bộ lại Database từ data.js
     const btnSync = document.getElementById('btn-sync-data');
     if(btnSync) {
         btnSync.addEventListener('click', () => {
-            let msg = "CẢNH BÁO!\n\nHành động này sẽ XÓA TOÀN BỘ dữ liệu lưu tạm trên trình duyệt và nạp lại bản gốc từ file data.js.\n\nNếu bạn vừa thêm truyện mới mà chưa Copy code dán vào file data.js thì dữ liệu đó sẽ bị mất.\n\nBạn có chắc chắn muốn Đồng bộ không?";
+            let msg = "CẢNH BÁO!\n\nHành động này sẽ XÓA TOÀN BỘ dữ liệu lưu tạm trên trình duyệt và nạp lại bản gốc từ file data.js.\n\nBạn có chắc chắn muốn Đồng bộ không?";
             if(confirm(msg)) {
                 localStorage.removeItem('STORIES_DB');
                 window.location.reload();
@@ -23,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Render checkbox 35 thể loại
+    // Render checkbox Thể loại
     const catContainer = document.getElementById('m-categories-container');
     if(catContainer) {
         catContainer.innerHTML = ALL_CATEGORIES.map(cat => `
@@ -36,9 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
+    // Vẽ Bảng và Biểu đồ
     renderAdminTable();
+    renderStoryCharts();
 
-    // SỰ KIỆN TÌM KIẾM CHƯƠNG THÔNG MINH
+    // Sự kiện tìm kiếm chương
     const searchInput = document.getElementById('search-chapter-input');
     if(searchInput) {
         searchInput.addEventListener('input', function(e) {
@@ -84,6 +116,9 @@ function deleteStory(id) {
         stories = stories.filter(s => s.id !== id);
         saveDatabase(stories);
         renderAdminTable();
+        
+        const labelTotal = document.getElementById('stat-total-stories');
+        if(labelTotal) labelTotal.innerText = stories.length;
     }
 }
 
@@ -99,6 +134,7 @@ function openAddModal() {
     document.getElementById('storyModalHeader').className = 'modal-header bg-success text-white';
     document.getElementById('m-chapter').readOnly = false;
     document.getElementById('m-chapter-help').classList.add('d-none');
+    hidePreview();
     storyModal.show();
 }
 
@@ -122,6 +158,9 @@ function openEditModal(id) {
     document.getElementById('m-chapter').readOnly = true;
     document.getElementById('m-chapter-help').classList.remove('d-none');
 
+    if (story.cover && !story.cover.includes('placeholder.com')) showPreview(story.cover);
+    else hidePreview();
+
     document.querySelectorAll('.cat-checkbox').forEach(cb => {
         cb.checked = (story.categories && story.categories.includes(cb.value));
     });
@@ -135,7 +174,6 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
     const action = document.getElementById('form-action').value;
     const selectedCats = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
 
-    // MẶC ĐỊNH CHO TÁC GIẢ VÀ ẢNH NẾU BỎ TRỐNG
     let authorVal = document.getElementById('m-author').value.trim() || "Không rõ";
     let coverVal = document.getElementById('m-cover').value.trim() || "https://via.placeholder.com/300x420/1a1a1a/ffffff?text=No+Cover";
 
@@ -152,8 +190,7 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
             isHot: document.getElementById('m-hot').checked,
             description: document.getElementById('m-desc').value.trim(),
             views: 0, votes: 0, updateTime: "Vừa xong",
-            chapterList: [],
-            comments: []
+            chapterList: [], comments: []
         });
     } else {
         const id = parseInt(document.getElementById('form-story-id').value);
@@ -172,10 +209,13 @@ document.getElementById('story-form').addEventListener('submit', function(e) {
     saveDatabase(stories);
     storyModal.hide();
     renderAdminTable();
+    
+    const labelTotal = document.getElementById('stat-total-stories');
+    if(labelTotal) labelTotal.innerText = stories.length;
 });
 
 // ==============================================================
-// 3. QUẢN LÝ CHƯƠNG VÀ TÌM KIẾM
+// 3. QUẢN LÝ CHƯƠNG
 // ==============================================================
 const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
 
@@ -199,17 +239,14 @@ function openChapterModal(id) {
     
     document.getElementById('c-story-id').value = id;
     document.getElementById('chap-modal-story-title').innerText = stories[storyIndex].title;
-    
     document.getElementById('chapter-editor-area').style.display = 'none';
     document.getElementById('chapter-welcome-area').style.display = 'block';
-    
     document.getElementById('search-chapter-input').value = "";
 
     renderChapterListSidebar(stories[storyIndex]);
     chapterModal.show();
 }
 
-// RENDER DANH SÁCH CHƯƠNG (CÓ HỖ TRỢ LỌC THÔNG MINH)
 function renderChapterListSidebar(story, searchTerm = "") {
     const container = document.getElementById('chapter-list-container');
     if (story.chapterList.length === 0) {
@@ -230,11 +267,6 @@ function renderChapterListSidebar(story, searchTerm = "") {
         });
     }
 
-    if (sortedChaps.length === 0) {
-        container.innerHTML = '<div class="p-3 text-muted text-center">Không tìm thấy chương phù hợp.</div>';
-        return;
-    }
-    
     container.innerHTML = sortedChaps.map(chap => {
         let titleDisplay = `Chương ${chap.chapNum}` + (chap.subTitle ? ` - ${chap.subTitle}` : '');
         let badges = '';
@@ -254,7 +286,6 @@ function prepareAddChapter() {
 
     document.getElementById('chapter-welcome-area').style.display = 'none';
     document.getElementById('chapter-editor-area').style.display = 'block';
-    
     document.getElementById('editor-title').innerHTML = '<i class="fas fa-plus-circle text-success me-2"></i>Thêm Chương Mới';
     document.getElementById('chapter-form').reset();
     document.getElementById('c-action').value = 'add';
@@ -268,19 +299,16 @@ function prepareEditChapter(storyId, chapNum) {
     
     document.getElementById('chapter-welcome-area').style.display = 'none';
     document.getElementById('chapter-editor-area').style.display = 'block';
-    
     document.getElementById('editor-title').innerHTML = '<i class="fas fa-edit text-warning me-2"></i>Chỉnh Sửa Chương';
     document.getElementById('c-action').value = 'edit';
     document.getElementById('c-number').value = chap.chapNum;
     document.getElementById('c-display-num').value = `Chương ${chap.chapNum}`;
-    
     document.getElementById('c-subtitle').value = chap.subTitle || "";
     document.getElementById('c-vip').checked = chap.isVip || false;
     document.getElementById('c-hidden').checked = chap.isHidden || false;
     document.getElementById('c-content').value = chap.content || "";
 }
 
-// LƯU CHƯƠNG VÀO DATABASE
 document.getElementById('chapter-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const storyId = parseInt(document.getElementById('c-story-id').value);
@@ -320,3 +348,112 @@ document.getElementById('chapter-form').addEventListener('submit', function(e) {
     renderChapterListSidebar(story, currentSearch);
     renderAdminTable(); 
 });
+
+// ==============================================================
+// 4. XỬ LÝ ẢNH BÌA
+// ==============================================================
+const coverInput = document.getElementById('m-cover');
+const coverFile = document.getElementById('m-cover-file');
+const previewContainer = document.getElementById('m-cover-preview-container');
+const previewImg = document.getElementById('m-cover-preview');
+
+if (coverFile) {
+    coverFile.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64String = event.target.result;
+                coverInput.value = base64String;
+                showPreview(base64String);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+if (coverInput) {
+    coverInput.addEventListener('input', function() {
+        if (this.value.trim() !== "") showPreview(this.value.trim());
+        else hidePreview();
+    });
+}
+
+document.getElementById('btn-remove-cover')?.addEventListener('click', function() {
+    coverInput.value = "";
+    coverFile.value = "";
+    hidePreview();
+});
+
+function showPreview(src) {
+    previewImg.src = src;
+    previewContainer.classList.remove('d-none');
+}
+function hidePreview() {
+    previewImg.src = "";
+    previewContainer.classList.add('d-none');
+}
+
+// ==============================================================
+// 5. CHUYỂN TAB VÀ VẼ BIỂU ĐỒ
+// ==============================================================
+window.switchTab = function(tabName) {
+    document.getElementById('tab-dashboard').className = 'nav-link fw-bold px-3 py-2 text-dark';
+    document.getElementById('tab-manage').className = 'nav-link fw-bold px-3 py-2 text-dark';
+    document.getElementById(`tab-${tabName}`).className = 'nav-link active fw-bold px-3 py-2 text-white';
+
+    if (tabName === 'dashboard') {
+        document.getElementById('section-dashboard').classList.remove('d-none');
+        document.getElementById('section-manage').classList.add('d-none');
+    } else {
+        document.getElementById('section-dashboard').classList.add('d-none');
+        document.getElementById('section-manage').classList.remove('d-none');
+    }
+};
+
+function renderStoryCharts() {
+    const labelTotal = document.getElementById('stat-total-stories');
+    if(labelTotal && window.appDB) labelTotal.innerText = window.appDB.length;
+
+    const commonOptions = { responsive: true, maintainAspectRatio: false };
+
+    if (document.getElementById('chartViews')) {
+        new Chart(document.getElementById('chartViews'), {
+            type: 'line',
+            data: {
+                labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                datasets: [{ label: 'Lượt xem', data: [145000, 260000, 180000, 250000, 290000, 310000], borderColor: '#0d6efd', backgroundColor: 'rgba(13, 110, 253, 0.1)', tension: 0.4, fill: true }]
+            }, options: commonOptions
+        });
+    }
+
+    if (document.getElementById('chartCategories')) {
+        new Chart(document.getElementById('chartCategories'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Tiên Hiệp', 'Huyền Huyễn', 'Ngôn Tình', 'Khác'],
+                datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#6c757d'], borderWidth: 0 }]
+            }, options: commonOptions
+        });
+    }
+
+    if (document.getElementById('chartComments')) {
+        new Chart(document.getElementById('chartComments'), {
+            type: 'bar',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{ label: 'Bình luận mới', data: [65, 54, 82, 81, 56, 120, 150], backgroundColor: '#ffc107', borderRadius: 4 }]
+            }, options: commonOptions
+        });
+    }
+
+    if (document.getElementById('chartUsers')) {
+        new Chart(document.getElementById('chartUsers'), {
+            type: 'line',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{ label: 'Đăng ký mới', data: [150, 255, 175, 178, 250, 420, 500], borderColor: '#dc3545', backgroundColor: 'transparent', tension: 0.1 }]
+            }, options: commonOptions
+        });
+    }
+}

@@ -8,17 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     
-    <style>
-        .chapter-list-scroll { max-height: 500px; overflow-y: auto; }
-        .chap-item.active { background-color: #0d6efd; color: white; }
-        .chap-item { cursor: pointer; transition: 0.2s; }
-        .chap-item:hover:not(.active) { background-color: #e9ecef; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-dark bg-dark shadow-sm sticky-top">
         <div class="container-fluid px-4">
+            <button class="btn btn-dark d-md-none me-2 border-0" id="btn-toggle-sidebar">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
             <a class="navbar-brand fw-bold text-warning" href="index.html">
                 <img src="images/favicon-32x32.png" width="30" class="me-2 rounded-circle bg-white">
                 Hệ Thống Admin
@@ -29,35 +29,149 @@
             </div>
         </div>
     </nav>
-<div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold text-primary"><i class="fas fa-tasks me-2"></i>Quản Lý Truyện</h3>
-            <div>
-                <button class="btn btn-warning fw-bold shadow-sm me-2" id="btn-sync-data" title="Tải lại dữ liệu gốc từ file data.js">
-                    <i class="fas fa-sync-alt me-1"></i> Đồng bộ File Gốc
-                </button>
-                <button class="btn btn-success fw-bold shadow-sm" onclick="openAddModal()">
-                    <i class="fas fa-plus me-1"></i> Thêm Truyện Mới
-                </button>
-            </div>
-        </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0 table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="text-center" width="60">ID</th>
-                            <th width="70">Ảnh</th>
-                            <th>Tên Truyện</th>
-                            <th>Tác giả</th>
-                            <th>Số Chương</th>
-                            <th>Tình trạng</th>
-                            <th class="text-center" width="250">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-table-body"></tbody>
-                </table>
-            </div>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar py-4">
+                <div class="position-sticky px-3">
+                    <p class="text-muted small fw-bold text-uppercase mb-2 px-2">Điều hướng</p>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active fw-bold px-3 py-2" href="#" id="tab-dashboard" onclick="switchTab('dashboard')">
+                                <i class="fas fa-chart-pie me-2 w-20px text-center"></i> Thống Kê
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-bold px-3 py-2" href="#" id="tab-manage" onclick="switchTab('manage')">
+                                <i class="fas fa-book me-2 w-20px text-center"></i> Quản Lý Truyện
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <div id="section-dashboard">
+                    <h3 class="fw-bold text-primary mb-4"><i class="fas fa-chart-pie me-2"></i>Tổng Quan Hệ Thống</h3>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-0 shadow-sm bg-white stat-card h-100">
+                                <div class="card-body d-flex align-items-center p-4">
+                                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle me-3"><i class="fas fa-book fa-2x"></i></div>
+                                    <div>
+                                        <h6 class="text-muted mb-1 small fw-bold text-uppercase">Tổng truyện</h6>
+                                        <h3 class="fw-bold mb-0 text-dark" id="stat-total-stories">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-0 shadow-sm bg-white stat-card h-100">
+                                <div class="card-body d-flex align-items-center p-4">
+                                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle me-3"><i class="fas fa-eye fa-2x"></i></div>
+                                    <div>
+                                        <h6 class="text-muted mb-1 small fw-bold text-uppercase">Lượt truy cập</h6>
+                                        <h3 class="fw-bold mb-0 text-dark">4.8M</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-0 shadow-sm bg-white stat-card h-100">
+                                <div class="card-body d-flex align-items-center p-4">
+                                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle me-3"><i class="fas fa-comments fa-2x"></i></div>
+                                    <div>
+                                        <h6 class="text-muted mb-1 small fw-bold text-uppercase">Bình luận</h6>
+                                        <h3 class="fw-bold mb-0 text-dark">12.4K</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card border-0 shadow-sm bg-white stat-card h-100">
+                                <div class="card-body d-flex align-items-center p-4">
+                                    <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle me-3"><i class="fas fa-users fa-2x"></i></div>
+                                    <div>
+                                        <h6 class="text-muted mb-1 small fw-bold text-uppercase">Online</h6>
+                                        <h3 class="fw-bold mb-0 text-dark">1,245</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-8">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold text-dark mb-3">Lưu lượng đọc truyện (Views)</h5>
+                                    <div class="chart-wrapper"><canvas id="chartViews"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold text-dark mb-3">Tỷ lệ thể loại</h5>
+                                    <div class="chart-wrapper"><canvas id="chartCategories"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold text-dark mb-3">Tương tác bình luận (Tuần này)</h5>
+                                    <div class="chart-wrapper"><canvas id="chartComments"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold text-dark mb-3">Tốc độ tăng trưởng thành viên</h5>
+                                    <div class="chart-wrapper"><canvas id="chartUsers"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="section-manage" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-bold text-primary"><i class="fas fa-list-alt me-2"></i>Quản Lý Truyện</h3>
+                        <div>
+                            <button class="btn btn-warning fw-bold shadow-sm me-2" id="btn-sync-data" title="Tải lại dữ liệu gốc từ file data.js">
+                                <i class="fas fa-sync-alt me-1"></i> Đồng bộ Dữ liệu gốc
+                            </button>
+                            <button class="btn btn-success fw-bold shadow-sm" onclick="openAddModal()">
+                                <i class="fas fa-plus me-1"></i> Thêm Truyện Mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-hover align-middle mb-0 bg-white">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="text-center" width="60">ID</th>
+                                        <th width="70">Ảnh</th>
+                                        <th>Tên Truyện</th>
+                                        <th>Tác giả</th>
+                                        <th>Số Chương</th>
+                                        <th>Tình trạng</th>
+                                        <th class="text-center" width="250">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
@@ -83,8 +197,22 @@
                                 <input type="text" id="m-author" class="form-control" placeholder="Để trống mặc định là 'Không rõ'">
                             </div>
                             <div class="col-md-12">
-                                <label class="fw-bold mb-1">Link Ảnh bìa (URL)</label>
-                                <input type="url" id="m-cover" class="form-control" placeholder="Để trống sẽ dùng ảnh bìa màu đen mặc định">
+                                <label class="fw-bold mb-1">Ảnh bìa (Nhập Link hoặc Chọn File từ máy)</label>
+                                <div class="input-group mb-2 shadow-sm">
+                                    <input type="text" id="m-cover" class="form-control" placeholder="Nhập link ảnh (http...) hoặc tải file lên">
+                                    <button class="btn btn-outline-secondary fw-bold" type="button" onclick="document.getElementById('m-cover-file').click()">
+                                        <i class="fas fa-upload me-1"></i>Chọn File
+                                    </button>
+                                </div>
+                                <input type="file" id="m-cover-file" class="d-none" accept="image/*">
+                                
+                                <div class="text-center mt-2 d-none p-3 border rounded bg-white shadow-sm" id="m-cover-preview-container">
+                                    <h6 class="text-muted small mb-2">Xem trước ảnh bìa</h6>
+                                    <img id="m-cover-preview" src="" alt="Preview" class="img-thumbnail" style="max-height: 180px; object-fit: contain;">
+                                    <button type="button" class="btn btn-sm btn-outline-danger d-block mx-auto mt-2" id="btn-remove-cover">
+                                        <i class="fas fa-trash me-1"></i> Xóa ảnh
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="col-12">
@@ -147,7 +275,7 @@
                             </div>
 
                             <div class="list-group list-group-flush border rounded bg-white" id="chapter-list-container">
-                                </div>
+                            </div>
                         </div>
                         
                         <div class="col-md-8 p-4 bg-white" id="chapter-editor-area" style="display: none;">

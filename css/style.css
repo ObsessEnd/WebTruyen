@@ -97,3 +97,93 @@ body {
 }
 .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+.stat-card { transition: transform 0.2s ease-in-out; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+
+
+
+        /* ==============================================================
+   CSS DÀNH RIÊNG CHO GIAO DIỆN ADMIN DASHBOARD
+   ============================================================== */
+
+/* Cấu trúc thanh Menu bên trái (Sidebar) */
+.sidebar { 
+    min-height: calc(100vh - 56px); 
+    background-color: #ffffff; 
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05); 
+    z-index: 100; 
+}
+.sidebar .nav-link { 
+    color: #495057; 
+    border-radius: 8px; 
+    margin-bottom: 5px; 
+    transition: all 0.2s; 
+}
+.sidebar .nav-link:hover { 
+    background-color: #f8f9fa; 
+    color: #0d6efd; 
+}
+.sidebar .nav-link.active { 
+    background-color: #0d6efd; 
+    color: #ffffff; 
+    box-shadow: 0 4px 6px rgba(13,110,253,0.2); 
+}
+
+/* Fix lỗi biểu đồ Chart.js bị trắng màn hình */
+.chart-wrapper { 
+    position: relative; 
+    height: 300px; 
+    width: 100%; 
+}
+
+/* Hiệu ứng tương tác cho Admin */
+.chapter-list-scroll { max-height: 500px; overflow-y: auto; }
+.chap-item { cursor: pointer; transition: 0.2s; }
+.chap-item:hover:not(.active) { background-color: #e9ecef; }
+.chap-item.active { background-color: #0d6efd; color: white; }
+.stat-card { transition: transform 0.2s ease; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+/* XỬ LÝ SIDEBAR TRÊN ĐIỆN THOẠI (RESPONSIVE) */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 56px; /* Nằm dưới thanh navbar */
+        left: -100%; /* Giấu nó ra khỏi màn hình bên trái */
+        width: 250px;
+        height: calc(100vh - 56px);
+        transition: all 0.3s ease-in-out;
+        z-index: 1040;
+    }
+    .sidebar.show {
+        left: 0; /* Trượt vào màn hình khi có class show */
+        box-shadow: 10px 0 15px rgba(0,0,0,0.1);
+    }
+    /* Làm mờ nền đằng sau khi mở menu trên điện thoại */
+    .sidebar-overlay {
+        position: fixed; top: 56px; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.5); z-index: 1039; display: none;
+    }
+    .sidebar-overlay.show { display: block; }
+}
+/* ==============================================================
+   FIX LỖI MENU THỂ LOẠI TRÊN MÀN HÌNH ĐIỆN THOẠI (RESPONSIVE)
+   ============================================================== */
+@media (max-width: 991.98px) {
+    .navbar-nav .dropdown-menu {
+        min-width: 100% !important; /* Vô hiệu hóa cái min-width 520px bị ép cứng trong HTML */
+        max-height: 250px; /* Giới hạn chiều cao của bảng thể loại */
+        overflow-y: auto; /* Bật thanh cuộn dọc cho bảng thể loại */
+        box-shadow: none !important; /* Bỏ đổ bóng thừa thãi trên mobile */
+        border: 1px solid #dee2e6 !important;
+        margin-top: 10px;
+    }
+    
+    /* Chuyển từ 3 cột (col-4) thành 2 cột (50%) để ngón tay dễ bấm hơn trên mobile */
+    .navbar-nav .dropdown-menu .col-4 {
+        width: 50% !important;
+        margin-bottom: 5px;
+    }
+}
