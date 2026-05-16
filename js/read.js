@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // KHI MENU MỞ LẠI: Trả về nút lưỡi ngang giữa màn hình ban đầu
                 toggleIcon.className = 'fas fa-chevron-up text-light'; 
-                stickyMenuWrapper.classList.remove('menu-hidden-state'); 
+                stickyMenuWrapper.classList.remove('menu-hidden-state');  
             }
         });
     }
