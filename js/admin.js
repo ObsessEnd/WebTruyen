@@ -410,50 +410,68 @@ window.switchTab = function(tabName) {
         document.getElementById('section-manage').classList.remove('d-none');
     }
 };
-
+// ==============================================================
+// 6. RENDER BIỂU ĐỒ CHART.JS (CÓ BẢO VỆ CHỐNG SẬP CODE HỆ THỐNG)
+// ==============================================================
 function renderStoryCharts() {
+    // 1. Kiểm tra an toàn xem thư viện Chart.js đã tải xong hoàn toàn từ mạng chưa
+    if (typeof Chart === 'undefined') {
+        console.warn("Hệ thống cảnh báo: Thư viện Chart.js chưa tải xong hoặc bị chặn bởi mạng. Hệ thống tự động cô lập để giữ các nút bấm quản lý hoạt động bình thường!");
+        return; // Thoát ra ngay lập tức, không cho phá hỏng code phía sau
+    }
+
+    // 2. Đảm bảo dữ liệu gốc luôn tồn tại, nếu chưa có thì nạp mảng rỗng làm lá chắn
+    if (!window.appDB) {
+        window.appDB = JSON.parse(localStorage.getItem('STORIES_DB')) || [];
+    }
+
     const labelTotal = document.getElementById('stat-total-stories');
-    if(labelTotal && window.appDB) labelTotal.innerText = window.appDB.length;
+    if(labelTotal) labelTotal.innerText = window.appDB.length;
 
-    const commonOptions = { responsive: true, maintainAspectRatio: false };
+    // 3. Dùng bộ lọc try-catch để bao bọc quá trình vẽ đồ thị
+    try {
+        const commonOptions = { responsive: true, maintainAspectRatio: false };
 
-    if (document.getElementById('chartViews')) {
-        new Chart(document.getElementById('chartViews'), {
-            type: 'line',
-            data: {
-                labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-                datasets: [{ label: 'Lượt xem', data: [145000, 260000, 180000, 250000, 290000, 310000], borderColor: '#0d6efd', backgroundColor: 'rgba(13, 110, 253, 0.1)', tension: 0.4, fill: true }]
-            }, options: commonOptions
-        });
-    }
+        if (document.getElementById('chartViews')) {
+            new Chart(document.getElementById('chartViews'), {
+                type: 'line',
+                data: {
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                    datasets: [{ label: 'Lượt xem', data: [145000, 260000, 180000, 250000, 290000, 310000], borderColor: '#0d6efd', backgroundColor: 'rgba(13, 110, 253, 0.1)', tension: 0.4, fill: true }]
+                }, options: commonOptions
+            });
+        }
 
-    if (document.getElementById('chartCategories')) {
-        new Chart(document.getElementById('chartCategories'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Tiên Hiệp', 'Huyền Huyễn', 'Ngôn Tình', 'Khác'],
-                datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#6c757d'], borderWidth: 0 }]
-            }, options: commonOptions
-        });
-    }
+        if (document.getElementById('chartCategories')) {
+            new Chart(document.getElementById('chartCategories'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tiên Hiệp', 'Huyền Huyễn', 'Ngôn Tình', 'Khác'],
+                    datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#6c757d'], borderWidth: 0 }]
+                }, options: commonOptions
+            });
+        }
 
-    if (document.getElementById('chartComments')) {
-        new Chart(document.getElementById('chartComments'), {
-            type: 'bar',
-            data: {
-                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
-                datasets: [{ label: 'Bình luận mới', data: [65, 54, 82, 81, 56, 120, 150], backgroundColor: '#ffc107', borderRadius: 4 }]
-            }, options: commonOptions
-        });
-    }
+        if (document.getElementById('chartComments')) {
+            new Chart(document.getElementById('chartComments'), {
+                type: 'bar',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{ label: 'Bình luận mới', data: [65, 54, 82, 81, 56, 120, 150], backgroundColor: '#ffc107', borderRadius: 4 }]
+                }, options: commonOptions
+            });
+        }
 
-    if (document.getElementById('chartUsers')) {
-        new Chart(document.getElementById('chartUsers'), {
-            type: 'line',
-            data: {
-                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
-                datasets: [{ label: 'Đăng ký mới', data: [150, 255, 175, 178, 250, 420, 500], borderColor: '#dc3545', backgroundColor: 'transparent', tension: 0.1 }]
-            }, options: commonOptions
-        });
+        if (document.getElementById('chartUsers')) {
+            new Chart(document.getElementById('chartUsers'), {
+                type: 'line',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{ label: 'Đăng ký mới', data: [150, 255, 175, 178, 250, 420, 500], borderColor: '#dc3545', backgroundColor: 'transparent', tension: 0.1 }]
+                }, options: commonOptions
+            });
+        }
+    } catch (error) {
+        console.error("Phát hiện lỗi cấu hình thông số Chart nhưng hệ thống đã xử lý cô lập thành công:", error);
     }
 }
