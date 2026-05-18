@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 08 - JSON</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+            background-color: #f9f9f9;
+        }
+
+        .user-container {
+            border: 3px solid #000;
+            width: 500px;
+            background-color: #fff;
+        }
+
+        .user-header {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 15px;
+            border-bottom: 2px solid #000;
+        }
+
+        .user-content {
+            padding: 30px;
+            font-size: 18px;
+            line-height: 2;
+        }
+
+        .field-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="user-container">
+    <div class="user-header">User Information</div>
+    <div class="user-content" id="display-area">
+        </div>
+</div>
+
+<script>
+    // 1. Tạo đối tượng JSON chứa thông tin người dùng
+    const userRawData = {
+        "name": "Tran Viet Anh",
+        "age": 21,
+        "email": "tranvietanh@stu.edu.vn",
+        "address": "Ho Chi Minh, NY 10001"
+    };
+
+    // 2. Chuyển đổi qua lại để giả lập việc nhận dữ liệu JSON
+    const userJson = JSON.stringify(userRawData);
+    const userObj = JSON.parse(userJson);
+
+    // 3. Hiển thị thông tin ra màn hình
+    const displayArea = document.getElementById("display-area");
+    
+    displayArea.innerHTML = `
+        <div><span class="field-label">Name:</span> ${userObj.name}</div>
+        <div><span class="field-label">Age:</span> ${userObj.age}</div>
+        <div><span class="field-label">Email:</span> ${userObj.mail}</div>
+        <div><span class="field-label">Address:</span> ${userObj.address}</div>
+    `;
+</script>
+
+</body>
+</html>

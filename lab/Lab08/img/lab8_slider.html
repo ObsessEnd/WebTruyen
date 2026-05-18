@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 08 - Slider</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        /* Khung chứa slider */
+        .slider-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            border: 5px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Các slide ảnh */
+        .slides {
+            display: none;
+            width: 100%;
+        }
+
+        .slides img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Nút chuyển trái/phải */
+        .btn-nav {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.3s ease;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        .btn-nav:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .prev { left: 0; border-radius: 0 3px 3px 0; }
+        .next { right: 0; border-radius: 3px 0 0 3px; }
+
+        /* Container chứa các chấm tròn */
+        .dots-container {
+            text-align: center;
+            padding: 15px;
+            background: #fff;
+        }
+
+        .dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            border: 1px solid #999;
+        }
+
+        .active, .dot:hover {
+            background-color: #333;
+        }
+
+        /* Hiệu ứng mờ dần khi chuyển ảnh */
+        .fade {
+            animation-name: fade;
+            animation-duration: 0.5s;
+        }
+
+        @keyframes fade {
+            from { opacity: .4 }
+            to { opacity: 1 }
+        }
+    </style>
+</head>
+<body>
+
+<div class="slider-container">
+    <div class="slides fade">
+        <img src="slide_1.jpeg" alt="Ảnh 1">
+    </div>
+    <div class="slides fade">
+        <img src="slide_2.jpg" alt="Ảnh 2">
+    </div>
+    <div class="slides fade">
+        <img src="slide_3.jpg" alt="Ảnh 3">
+    </div>
+    <div class="slides fade">
+        <img src="slide_4.jpg" alt="Ảnh 4">
+    </div>
+    <div class="slides fade">
+        <img src="slide_5.jpg" alt="Ảnh 5">
+    </div>
+
+    <a class="btn-nav prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="btn-nav next" onclick="plusSlides(1)">&#10095;</a>
+
+    <div class="dots-container">
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+        <span class="dot" onclick="currentSlide(4)"></span>
+        <span class="dot" onclick="currentSlide(5)"></span>
+    </div>
+</div>
+
+<script>
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    // Hàm chuyển tới slide trước/sau (n = 1 hoặc -1)
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    // Hàm nhảy tới slide cụ thể khi bấm vào chấm tròn
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("slides");
+        let dots = document.getElementsByClassName("dot");
+
+        // Nếu vượt quá số lượng ảnh thì quay về ảnh đầu tiên
+        if (n > slides.length) { slideIndex = 1 }
+        // Nếu lùi quá ảnh đầu tiên thì nhảy tới ảnh cuối cùng
+        if (n < 1) { slideIndex = slides.length }
+
+        // Ẩn tất cả các slide
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+
+        // Bỏ trạng thái active của tất cả các chấm tròn
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+
+        // Hiển thị slide hiện tại và đánh dấu chấm tròn tương ứng
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
+    }
+</script>
+
+</body>
+</html>

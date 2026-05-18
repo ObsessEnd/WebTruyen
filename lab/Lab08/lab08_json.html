@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 08 - Bài 3: JSON Data Display</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #f8fafc;
+            --accent-color: #818cf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--glass-border);
+            transform: scale(1.02);
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--accent-color);
+            width: 100px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .value {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            word-break: break-all;
+        }
+
+        /* Avatar decoration */
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #6366f1, #a855f7);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header">
+            <div class="avatar-placeholder" id="avatar">?</div>
+            <h1>User Information</h1>
+        </div>
+        
+        <div class="info-group" id="userInfo">
+            <!-- Data will be loaded here via JS -->
+            <div class="info-item">
+                <span class="label">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bước 1: Định nghĩa chuỗi JSON (Dữ liệu yêu cầu trong bài)
+        const jsonString = `{
+            "name": "Nguyễn Văn A",
+            "age": 30,
+            "email": "nguyenvana@stu.edu.vn",
+            "address": "Ho Chi Minh, NY 10001"
+        }`;
+
+        // Bước 2: Parse chuỗi JSON thành đối tượng JavaScript
+        const user = JSON.parse(jsonString);
+
+        // Bước 3: Hiển thị thông tin lên giao diện
+        function displayUser() {
+            const container = document.getElementById('userInfo');
+            const avatar = document.getElementById('avatar');
+            
+            // Cập nhật chữ cái đầu cho avatar
+            avatar.innerText = user.name.charAt(0);
+
+            // Tạo nội dung HTML động
+            container.innerHTML = `
+                <div class="info-item">
+                    <span class="label">Name:</span>
+                    <span class="value">${user.name}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Age:</span>
+                    <span class="value">${user.age}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email:</span>
+                    <span class="value">${user.email}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Address:</span>
+                    <span class="value">${user.address}</span>
+                </div>
+            `;
+        }
+
+        // Chạy hàm hiển thị
+        displayUser();
+    </script>
+</body>
+</html>
