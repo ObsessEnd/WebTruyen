@@ -249,63 +249,77 @@ body {
 
 
         /* ============================================================== */
-/* FILE: css/labs.css (STYLE GIAO DIỆN DANH MỤC LABS) */
+/* FILE: css/labs.css (STYLE GIAO DIỆN DANH MỤC LABS THIÊN ĐẠO) */
 /* ============================================================== */
 
-body { 
-    background-color: #e9ecef; 
-    color: #212529; 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
+.labs-bg {
+    background-color: #e9ecef;
+    min-height: 80vh;
 }
 
-.lab-card { 
-    background-color: #ffffff; 
-    border: 1px solid #dee2e6; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+.lab-card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
+    overflow: hidden;
 }
 
-.lab-card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1); 
+.lab-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
-.card-header-dark {
+.lab-card-header {
     background-color: #1a1a1a;
     color: #ffc107;
-    border-radius: 11px 11px 0 0 !important;
+    padding: 15px;
     border-bottom: 2px solid #333;
+    font-weight: bold;
+    font-size: 1.1rem;
 }
 
-.btn-action-dark {
+.lab-card-body {
+    padding: 15px;
+}
+
+.lab-card-body p {
+    margin-bottom: 8px;
+}
+
+.lab-card-body a {
+    text-decoration: none;
+    color: #495057;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.lab-card-body a:hover {
+    color: #ffc107;
+    transform: translateX(5px);
+}
+
+.lab-btn-detail {
     background-color: #1a1a1a;
     color: #ffffff;
     border: 1px solid #333;
-    font-weight: bold;
-    transition: all 0.2s;
+    transition: 0.3s;
+    font-weight: 500;
 }
 
-.btn-action-dark:hover {
+.lab-btn-detail:hover {
     background-color: #ffc107;
     color: #1a1a1a;
-    border-color: #ffc107;
 }
+        /* Tận dụng lại class của web, thêm tí style cho đẹp */
+        .admin-content { padding: 40px 0; background: #f8f9fa; }
+        .lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .lab-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .lab-list { list-style: none; padding: 0; margin: 15px 0; }
+        .lab-list li { margin-bottom: 8px; }
+        .lab-list a { color: #555; text-decoration: none; font-size: 14px; }
+        .lab-list a:hover { color: #e67e22; }
+        .btn-lab-view { display: block; text-align: center; background: #e67e22; color: #fff; padding: 10px; border-radius: 5px; text-decoration: none; font-weight: bold; }
 
-.lab-item-link {
-    display: block;
-    padding: 6px 12px;
-    color: #0d6efd;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-}
-
-.lab-item-link:hover {
-    background-color: #f8f9fa;
-    color: #0a58ca;
-    font-weight: bold;
-}
